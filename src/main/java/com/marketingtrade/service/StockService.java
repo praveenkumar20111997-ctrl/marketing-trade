@@ -4,12 +4,14 @@ import com.marketingtrade.dto.StockResponse;
 import com.marketingtrade.entity.InventoryTransaction;
 import com.marketingtrade.entity.ProductType;
 import com.marketingtrade.repository.InventoryRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@Slf4j
 @Service
 public class StockService {
 
@@ -25,17 +27,18 @@ public class StockService {
     }
 
     public StockResponse getStock(Long productTypeId) {
-
+        log.info("Getting stock for product type ID: {}", productTypeId);
         ProductType productType =
                 productTypeService.findById(productTypeId);
 
         BigDecimal stock =
                 inventoryRepository.getStock(productTypeId);
-
+        log.info("Retrieved stock for product type ID: {}: {}", productTypeId, stock);
         return toResponse(productType, stock);
     }
 
     public List<StockResponse> getAllStock() {
+        log.info("Getting stock for all product types");
 
         return productTypeService
                 .findAll()
@@ -58,6 +61,7 @@ public class StockService {
             Long productTypeId) {
 
         productTypeService.findById(productTypeId);
+        log.info("Fetching inventory history for product type ID: {}", productTypeId);
 
         return inventoryRepository
                 .findByProductTypeIdOrderByTransactionDateDesc(
@@ -70,7 +74,7 @@ public class StockService {
             Long productTypeId,
             BigDecimal quantity,
             String notes) {
-
+        log.info("Adjusting stock for product type ID: {}", productTypeId);
         ProductType productType =
                 productTypeService.findById(productTypeId);
 
@@ -80,7 +84,7 @@ public class StockService {
             throw new IllegalArgumentException(
                     "Adjustment quantity cannot be zero");
         }
-
+        log.info("Current stock for product type ID: {}: {}", productTypeId, inventoryRepository.getStock(productTypeId));
         BigDecimal currentStock =
                 inventoryRepository.getStock(productTypeId);
 
@@ -101,14 +105,14 @@ public class StockService {
         transaction.setTransactionType("ADJUSTMENT");
         transaction.setQuantity(quantity);
         transaction.setNotes(notes);
-
+        log.info("Saving inventory transaction for product type ID: {}", productTypeId);
         return inventoryRepository.save(transaction);
     }
 
     private StockResponse toResponse(
             ProductType productType,
             BigDecimal quantity) {
-
+        log.info("Creating stock response for product type ID: {}", productType.getId());
         return new StockResponse(
                 productType.getId(),
                 productType.getProduct().getProductName(),

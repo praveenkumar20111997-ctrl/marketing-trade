@@ -4,12 +4,14 @@ import com.marketingtrade.dto.SupplierRequest;
 import com.marketingtrade.entity.Supplier;
 import com.marketingtrade.service.SupplierService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/suppliers")
 public class SupplierController {
@@ -33,23 +35,25 @@ public class SupplierController {
     @PostMapping
     public ResponseEntity<Supplier> create(
             @Valid @RequestBody SupplierRequest request) {
-
+        log.info("Creating new supplier");
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(service.create(request));
     }
 
     @PutMapping("/{id}")
-    public Supplier update(
+    public ResponseEntity<Supplier> update(
             @PathVariable Long id,
             @Valid @RequestBody SupplierRequest request) {
-
-        return service.update(id, request);
+        log.info("Updating supplier with id: {}", id);
+        return ResponseEntity.ok(service.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivate(@PathVariable Long id) {
+    public ResponseEntity<Void> deactivate(@PathVariable Long id) {
+        log.info("Deactivating supplier with id: {}", id);
         service.deactivate(id);
+        return ResponseEntity.noContent().build();
     }
 }

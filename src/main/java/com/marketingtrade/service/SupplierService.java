@@ -4,11 +4,13 @@ import com.marketingtrade.dto.SupplierRequest;
 import com.marketingtrade.entity.Supplier;
 import com.marketingtrade.exception.ResourceNotFoundException;
 import com.marketingtrade.repository.SupplierRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 public class SupplierService {
@@ -26,12 +28,14 @@ public class SupplierService {
 
     @Transactional(readOnly = true)
     public Supplier getById(Long id) {
+        log.info("Finding supplier with ID: {}", id);
         return repository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Supplier not found: " + id));
     }
 
+    @Transactional
     public Supplier create(SupplierRequest request) {
 
         Supplier supplier = new Supplier();
@@ -44,10 +48,11 @@ public class SupplierService {
         if (request.active() != null) {
             supplier.setActive(request.active());
         }
-
+        log.info("Creating new supplier with name: {}", request.supplierName());
         return repository.save(supplier);
     }
 
+    @Transactional
     public Supplier update(Long id, SupplierRequest request) {
 
         Supplier supplier = getById(id);
@@ -60,13 +65,15 @@ public class SupplierService {
         if (request.active() != null) {
             supplier.setActive(request.active());
         }
-
+        log.info("Updating supplier with ID: {}", supplier.getId());
         return repository.save(supplier);
     }
 
+    @Transactional
     public void deactivate(Long id) {
 
         Supplier supplier = getById(id);
+        log.info("Deactivating supplier with ID: {}", supplier.getId());
         supplier.setActive(false);
 
         repository.save(supplier);

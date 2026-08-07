@@ -28,6 +28,7 @@ public class ProductController {
         log.info("Fetching all products");
         try {
             List<Product> products = service.findAll();
+            log.info("Found {} products", products.size());
             return ResponseEntity.ok(products);
         }   catch (Exception e) {
             log.error("Error fetching products: ", e);
@@ -42,6 +43,7 @@ public class ProductController {
             log.info("Product not found with id: {}", id);
             return ResponseEntity.notFound().build();
         }
+        log.info("Product found with id: {}", id);
         return ResponseEntity.ok(product);
     }
 
@@ -70,6 +72,7 @@ public class ProductController {
             if (product == null) {
                 return ResponseEntity.notFound().build();
             }
+            log.info("Product updated with id: {}", product.getId());
             return ResponseEntity.ok(product);
         } catch (Exception e) {
             log.error("Error updating product: ", e);
@@ -80,7 +83,9 @@ public class ProductController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deactivate(@PathVariable Long id) {
+        log.info("Deactivating product with id: {}", id);
         service.deactivate(id);
+        log.info("Product deactivated with id: {}", id);
         return ResponseEntity.noContent().build();
     }
 }

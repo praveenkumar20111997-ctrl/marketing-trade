@@ -1,6 +1,7 @@
 package com.marketingtrade.service;
 
 import com.marketingtrade.dto.ProductRequest;
+import com.marketingtrade.dto.ProductResponse;
 import com.marketingtrade.entity.Product;
 import com.marketingtrade.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -60,5 +61,33 @@ public class ProductService {
         product.setActive(false);
 
         repository.save(product);
+    }
+
+    // -----------------------------
+    // DTO returning methods for controllers
+    // -----------------------------
+
+    public java.util.List<ProductResponse> findAllDto() {
+        return repository.findAll()
+                .stream()
+                .map(p -> new ProductResponse(p.getId(), p.getProductName(), p.getBrand(), p.isActive()))
+                .toList();
+    }
+
+    public ProductResponse findByIdDto(Long id) {
+        Product product = findById(id);
+        return new ProductResponse(product.getId(), product.getProductName(), product.getBrand(), product.isActive());
+    }
+
+    @Transactional
+    public ProductResponse createDto(ProductRequest request) {
+        Product product = create(request);
+        return new ProductResponse(product.getId(), product.getProductName(), product.getBrand(), product.isActive());
+    }
+
+    @Transactional
+    public ProductResponse updateDto(Long id, ProductRequest request) {
+        Product product = update(id, request);
+        return new ProductResponse(product.getId(), product.getProductName(), product.getBrand(), product.isActive());
     }
 }

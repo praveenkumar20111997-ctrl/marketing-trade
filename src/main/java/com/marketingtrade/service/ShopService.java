@@ -1,6 +1,7 @@
 package com.marketingtrade.service;
 
 import com.marketingtrade.dto.ShopRequest;
+import com.marketingtrade.dto.ShopResponse;
 import com.marketingtrade.entity.Shop;
 import com.marketingtrade.exception.ResourceNotFoundException;
 import com.marketingtrade.repository.ShopRepository;
@@ -76,5 +77,35 @@ public class ShopService {
         shop.setActive(false);
 
         repository.save(shop);
+    }
+
+    // -----------------------------
+    // DTO returning methods for controllers
+    // -----------------------------
+
+    @Transactional(readOnly = true)
+    public java.util.List<ShopResponse> getAllDto() {
+        return repository.findAll()
+                .stream()
+                .map(s -> new ShopResponse(s.getId(), s.getShopName(), s.getOwnerName(), s.getContactNumber(), s.getAddress(), s.getLocation(), s.getActive()))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ShopResponse getByIdDto(Long id) {
+        Shop s = getById(id);
+        return new ShopResponse(s.getId(), s.getShopName(), s.getOwnerName(), s.getContactNumber(), s.getAddress(), s.getLocation(), s.getActive());
+    }
+
+    @Transactional
+    public ShopResponse createDto(ShopRequest request) {
+        Shop s = create(request);
+        return new ShopResponse(s.getId(), s.getShopName(), s.getOwnerName(), s.getContactNumber(), s.getAddress(), s.getLocation(), s.getActive());
+    }
+
+    @Transactional
+    public ShopResponse updateDto(Long id, ShopRequest request) {
+        Shop s = update(id, request);
+        return new ShopResponse(s.getId(), s.getShopName(), s.getOwnerName(), s.getContactNumber(), s.getAddress(), s.getLocation(), s.getActive());
     }
 }

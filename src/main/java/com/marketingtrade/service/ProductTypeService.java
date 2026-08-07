@@ -1,6 +1,7 @@
 package com.marketingtrade.service;
 
 import com.marketingtrade.dto.ProductTypeRequest;
+import com.marketingtrade.dto.ProductTypeResponse;
 import com.marketingtrade.entity.Product;
 import com.marketingtrade.entity.ProductType;
 import com.marketingtrade.exception.ResourceNotFoundException;
@@ -97,5 +98,64 @@ public class ProductTypeService {
         if (request.active() != null) {
             productType.setActive(request.active());
         }
+    }
+
+    // -----------------------------
+    // DTO returning methods for controllers
+    // -----------------------------
+
+    public java.util.List<ProductTypeResponse> findAllDto() {
+        return findAll()
+                .stream()
+                .map(pt -> new ProductTypeResponse(
+                        pt.getId(),
+                        pt.getProduct() != null ? pt.getProduct().getId() : null,
+                        pt.getProduct() != null ? pt.getProduct().getProductName() : null,
+                        pt.getTypeName(),
+                        pt.getSpecification(),
+                        pt.getUnit(),
+                        pt.isActive()
+                ))
+                .toList();
+    }
+
+    public java.util.List<ProductTypeResponse> findByProductDto(Long productId) {
+        return findByProduct(productId)
+                .stream()
+                .map(pt -> new ProductTypeResponse(
+                        pt.getId(),
+                        pt.getProduct() != null ? pt.getProduct().getId() : null,
+                        pt.getProduct() != null ? pt.getProduct().getProductName() : null,
+                        pt.getTypeName(),
+                        pt.getSpecification(),
+                        pt.getUnit(),
+                        pt.isActive()
+                ))
+                .toList();
+    }
+
+    public ProductTypeResponse findByIdDto(Long id) {
+        ProductType pt = findById(id);
+        return new ProductTypeResponse(
+                pt.getId(),
+                pt.getProduct() != null ? pt.getProduct().getId() : null,
+                pt.getProduct() != null ? pt.getProduct().getProductName() : null,
+                pt.getTypeName(),
+                pt.getSpecification(),
+                pt.getUnit(),
+                pt.isActive()
+        );
+    }
+
+    @Transactional
+    public ProductTypeResponse createDto(ProductTypeRequest request) {
+        ProductType pt = create(request);
+        return findByIdDto(pt.getId());
+    }
+
+    @Transactional
+    public ProductTypeResponse updateDto(Long id, ProductTypeRequest request) {
+        ProductType pt = update(id, request);
+        return findByIdDto(pt.getId());
     }
 }

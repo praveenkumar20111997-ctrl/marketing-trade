@@ -3,6 +3,7 @@ package com.marketingtrade.service;
 import com.marketingtrade.entity.ProductType;
 import com.marketingtrade.entity.Shop;
 import com.marketingtrade.entity.SellingPrice;
+import com.marketingtrade.dto.SellingPriceResponse;
 import com.marketingtrade.repository.ProductTypeRepository;
 import com.marketingtrade.repository.ShopRepository;
 import com.marketingtrade.repository.SellingPriceRepository;
@@ -320,5 +321,86 @@ public class SellingPriceService {
 
         log.info("Deactivating selling price with id: {}", id);
         return sellingPriceRepository.save(entity);
+    }
+
+    // -----------------------------
+    // DTO returning methods for controllers
+    // -----------------------------
+
+    @Transactional(readOnly = true)
+    public java.util.List<SellingPriceResponse> getAllDto() {
+        return getAll()
+                .stream()
+                .map(sp -> toResponse(sp))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public SellingPriceResponse getByIdDto(Long id) {
+        return toResponse(getById(id));
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<SellingPriceResponse> getByShopDto(Long shopId) {
+        return getByShop(shopId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<SellingPriceResponse> getByProductTypeDto(Long productTypeId) {
+        return getByProductType(productTypeId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<SellingPriceResponse> getByShopAndProductTypeDto(Long shopId, Long productTypeId) {
+        return getByShopAndProductType(shopId, productTypeId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    private SellingPriceResponse toResponse(SellingPrice sp) {
+        return new SellingPriceResponse(
+                sp.getId(),
+                sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getId() : null,
+                sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getProductName() : null,
+                sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getBrand() : null,
+                sp.getShop() != null ? sp.getShop().getId() : null,
+                sp.getShop() != null ? sp.getShop().getShopName() : null,
+                sp.getSellingPrice(),
+                sp.getActive()
+        );
+    }
+
+    public SellingPriceResponse createDto(
+            Long shopId,
+            Long productTypeId,
+            BigDecimal sellingPrice,
+            LocalDate effectiveFrom,
+            LocalDate effectiveTo) {
+        SellingPrice result = create(shopId, productTypeId, sellingPrice, effectiveFrom, effectiveTo);
+        return toResponse(result);
+    }
+
+    public SellingPriceResponse updateDto(
+            Long id,
+            Long shopId,
+            Long productTypeId,
+            BigDecimal sellingPrice,
+            LocalDate effectiveFrom,
+            LocalDate effectiveTo,
+            Boolean active) {
+        SellingPrice result = update(id, shopId, productTypeId, sellingPrice, effectiveFrom, effectiveTo, active);
+        return toResponse(result);
+    }
+
+    public SellingPriceResponse deactivateDto(Long id) {
+        SellingPrice result = deactivate(id);
+        return toResponse(result);
     }
 }

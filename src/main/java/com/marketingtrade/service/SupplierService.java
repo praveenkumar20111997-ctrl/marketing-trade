@@ -1,6 +1,7 @@
 package com.marketingtrade.service;
 
 import com.marketingtrade.dto.SupplierRequest;
+import com.marketingtrade.dto.SupplierResponse;
 import com.marketingtrade.entity.Supplier;
 import com.marketingtrade.exception.ResourceNotFoundException;
 import com.marketingtrade.repository.SupplierRepository;
@@ -77,5 +78,35 @@ public class SupplierService {
         supplier.setActive(false);
 
         repository.save(supplier);
+    }
+
+    // -----------------------------
+    // DTO returning methods for controllers
+    // -----------------------------
+
+    @Transactional(readOnly = true)
+    public java.util.List<SupplierResponse> getAllDto() {
+        return repository.findAll()
+                .stream()
+                .map(s -> new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive()))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public SupplierResponse getByIdDto(Long id) {
+        Supplier s = getById(id);
+        return new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive());
+    }
+
+    @Transactional
+    public SupplierResponse createDto(SupplierRequest request) {
+        Supplier s = create(request);
+        return new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive());
+    }
+
+    @Transactional
+    public SupplierResponse updateDto(Long id, SupplierRequest request) {
+        Supplier s = update(id, request);
+        return new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive());
     }
 }

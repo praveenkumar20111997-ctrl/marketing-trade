@@ -27,15 +27,10 @@ public class ProductController {
 
     @GetMapping
         public ResponseEntity<List<ProductResponse>> findAll() {
-        log.info("Fetching all products");
-        try {
-            List<Product> products = service.findAll();
-            log.info("Found {} products", products.size());
-                List<ProductResponse> responses = products.stream()
-                        .map(p -> new ProductResponse(p.getId(), p.getProductName(), p.getBrand(), p.isActive()))
-                        .collect(Collectors.toList());
-                return ResponseEntity.ok(responses);
-            }   catch (Exception e) {
+            log.info("Fetching all products");
+            try {
+                return ResponseEntity.ok(service.findAllDto());
+            } catch (Exception e) {
                 log.error("Error fetching products: ", e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
@@ -43,24 +38,23 @@ public class ProductController {
 
     @GetMapping("/{id}")
         public ResponseEntity<ProductResponse> findById(@PathVariable Long id) {
-        Product product = service.findById(id);
-        if (product == null) {
-            log.info("Product not found with id: {}", id);
-            return ResponseEntity.notFound().build();
+            try {
+                return ResponseEntity.ok(service.findByIdDto(id));
+            } catch (RuntimeException e) {
+                log.info("Product not found with id: {}", id);
+                return ResponseEntity.notFound().build();
+            }
         }
-        log.info("Product found with id: {}", id);
-            return ResponseEntity.ok(new ProductResponse(product.getId(), product.getProductName(), product.getBrand(), product.isActive()));
-    }
 
     @PostMapping
         public ResponseEntity<ProductResponse> create(
             @Valid @RequestBody ProductRequest request) {
         try {
-            Product product = service.create(request);
-            log.info("Product created with id: {}", product.getId());
+                var productResp = service.createDto(request);
+                log.info("Product created");
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                        .body(new ProductResponse(product.getId(), product.getProductName(), product.getBrand(), product.isActive()));
+                        .body(productResp);
         } catch (Exception e) {
             log.error("Error creating product: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -69,21 +63,19 @@ public class ProductController {
 
     @PutMapping("/{id}")
         public ResponseEntity<ProductResponse> update(
-            @PathVariable Long id,
-            @Valid @RequestBody ProductRequest request) {
+                @PathVariable Long id,
+                @Valid @RequestBody ProductRequest request) {
 
-        try {
-            Product product = service.update(id, request);
-            if (product == null) {
+            try {
+                var productResp = service.updateDto(id, request);
+                return ResponseEntity.ok(productResp);
+            } catch (RuntimeException e) {
                 return ResponseEntity.notFound().build();
+            } catch (Exception e) {
+                log.error("Error updating product: ", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
-            log.info("Product updated with id: {}", product.getId());
-                return ResponseEntity.ok(new ProductResponse(product.getId(), product.getProductName(), product.getBrand(), product.isActive()));
-        } catch (Exception e) {
-            log.error("Error updating product: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

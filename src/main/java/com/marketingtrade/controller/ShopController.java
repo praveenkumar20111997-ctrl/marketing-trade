@@ -25,19 +25,14 @@ public class ShopController {
 
     @GetMapping
         public ResponseEntity<List<ShopResponse>> getAll() {
-        log.info("Fetching all shops");
-            var shops = service.getAll();
-            var responses = shops.stream()
-                    .map(s -> new ShopResponse(s.getId(), s.getShopName(), s.getOwnerName(), s.getContactNumber(), s.getAddress(), s.getLocation(), s.getActive()))
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(responses);
+            log.info("Fetching all shops");
+            return ResponseEntity.ok(service.getAllDto());
         }
 
     @GetMapping("/{id}")
         public ResponseEntity<ShopResponse> getById(@PathVariable Long id) {
-        log.info("Fetching shop with id: {}", id);
-            var s = service.getById(id);
-            return ResponseEntity.ok(new ShopResponse(s.getId(), s.getShopName(), s.getOwnerName(), s.getContactNumber(), s.getAddress(), s.getLocation(), s.getActive()));
+            log.info("Fetching shop with id: {}", id);
+            return ResponseEntity.ok(service.getByIdDto(id));
         }
 
     @PostMapping
@@ -45,10 +40,10 @@ public class ShopController {
             @Valid @RequestBody ShopRequest request) {
 
         log.info("Creating new shop");
-            var shop = service.create(request);
+            var shop = service.createDto(request);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(new ShopResponse(shop.getId(), shop.getShopName(), shop.getOwnerName(), shop.getContactNumber(), shop.getAddress(), shop.getLocation(), shop.getActive()));
+                    .body(shop);
         }
 
     @PutMapping("/{id}")
@@ -57,8 +52,8 @@ public class ShopController {
             @Valid @RequestBody ShopRequest request) {
 
         log.info("Updating shop with id: {}", id);
-            var shop = service.update(id, request);
-            return ResponseEntity.ok(new ShopResponse(shop.getId(), shop.getShopName(), shop.getOwnerName(), shop.getContactNumber(), shop.getAddress(), shop.getLocation(), shop.getActive()));
+            var shop = service.updateDto(id, request);
+            return ResponseEntity.ok(shop);
         }
 
     @DeleteMapping("/{id}")

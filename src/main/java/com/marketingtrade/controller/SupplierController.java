@@ -25,27 +25,22 @@ public class SupplierController {
 
     @GetMapping
         public ResponseEntity<List<SupplierResponse>> getAll() {
-            var suppliers = service.getAll();
-            var responses = suppliers.stream()
-                    .map(s -> new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive()))
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(responses);
+            return ResponseEntity.ok(service.getAllDto());
         }
 
     @GetMapping("/{id}")
         public ResponseEntity<SupplierResponse> getById(@PathVariable Long id) {
-            var s = service.getById(id);
-            return ResponseEntity.ok(new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive()));
+            return ResponseEntity.ok(service.getByIdDto(id));
         }
 
     @PostMapping
         public ResponseEntity<SupplierResponse> create(
             @Valid @RequestBody SupplierRequest request) {
         log.info("Creating new supplier");
-            var s = service.create(request);
+            var s = service.createDto(request);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive()));
+                    .body(s);
         }
 
     @PutMapping("/{id}")
@@ -53,8 +48,8 @@ public class SupplierController {
             @PathVariable Long id,
             @Valid @RequestBody SupplierRequest request) {
         log.info("Updating supplier with id: {}", id);
-            var s = service.update(id, request);
-            return ResponseEntity.ok(new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive()));
+            var s = service.updateDto(id, request);
+            return ResponseEntity.ok(s);
         }
 
     @DeleteMapping("/{id}")

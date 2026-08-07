@@ -2,6 +2,7 @@ package com.marketingtrade.controller;
 
 import com.marketingtrade.entity.SellingPrice;
 import com.marketingtrade.service.SellingPriceService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/selling-prices")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -29,7 +31,7 @@ public class SellingPriceController {
 
     @GetMapping
     public ResponseEntity<List<SellingPrice>> getAll() {
-
+        log.info("Fetching all selling prices");
         return ResponseEntity.ok(
                 service.getAll()
         );
@@ -42,7 +44,7 @@ public class SellingPriceController {
     @GetMapping("/{id}")
     public ResponseEntity<SellingPrice> getById(
             @PathVariable Long id) {
-
+        log.info("Fetching selling price with id: {}", id);
         return ResponseEntity.ok(
                 service.getById(id)
         );
@@ -55,7 +57,7 @@ public class SellingPriceController {
     @GetMapping("/shop/{shopId}")
     public ResponseEntity<List<SellingPrice>> getByShop(
             @PathVariable Long shopId) {
-
+        log.info("Fetching selling prices for shop with id: {}", shopId);
         return ResponseEntity.ok(
                 service.getByShop(shopId)
         );
@@ -68,7 +70,7 @@ public class SellingPriceController {
     @GetMapping("/product-type/{productTypeId}")
     public ResponseEntity<List<SellingPrice>> getByProductType(
             @PathVariable Long productTypeId) {
-
+        log.info("Fetching selling prices for product type with id: {}", productTypeId);
         return ResponseEntity.ok(
                 service.getByProductType(productTypeId)
         );
@@ -84,6 +86,7 @@ public class SellingPriceController {
             @PathVariable Long shopId,
             @PathVariable Long productTypeId) {
 
+        log.info("Fetching selling prices for shop with id: {} and product type with id: {}", shopId, productTypeId);
         return ResponseEntity.ok(
                 service.getByShopAndProductType(
                         shopId,
@@ -107,6 +110,7 @@ public class SellingPriceController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate date) {
 
+        log.info("Fetching applicable selling price for product type with id: {} and shop with id: {}", productTypeId, shopId);
         return ResponseEntity.ok(
                 service.findApplicablePrice(
                         productTypeId,
@@ -136,7 +140,7 @@ public class SellingPriceController {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate effectiveTo) {
-
+        log.info("Creating new selling price");
         SellingPrice result =
                 service.create(
                         shopId,
@@ -145,6 +149,7 @@ public class SellingPriceController {
                         effectiveFrom,
                         effectiveTo
                 );
+        log.info("Creating new selling price");
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -190,7 +195,7 @@ public class SellingPriceController {
                         effectiveTo,
                         active
                 );
-
+        log.info("Updating selling price with id: {}", id);
         return ResponseEntity.ok(result);
     }
 
@@ -202,8 +207,9 @@ public class SellingPriceController {
     public ResponseEntity<Void> delete(
             @PathVariable Long id) {
 
+        log.info("Deleting selling price with id: {}", id);
         service.delete(id);
-
+        log.info("Selling price with id: {}", id);
         return ResponseEntity.noContent().build();
     }
 
@@ -215,6 +221,7 @@ public class SellingPriceController {
     public ResponseEntity<SellingPrice> deactivate(
             @PathVariable Long id) {
 
+        log.info("Deactivating selling price with id: {}", id);
         return ResponseEntity.ok(
                 service.deactivate(id)
         );

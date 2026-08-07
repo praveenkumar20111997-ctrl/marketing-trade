@@ -14,6 +14,7 @@ import com.marketingtrade.repository.InventoryRepository;
 import com.marketingtrade.repository.ProductTypeRepository;
 import com.marketingtrade.repository.PurchaseItemRepository;
 import com.marketingtrade.repository.ShopRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 public class DeliveryService {
@@ -157,6 +159,7 @@ public class DeliveryService {
         /*
          * Reduce stock after delivery is saved.
          */
+        log.info("Reducing stock for delivery ID: {}", savedDelivery.getId());
         for (DeliveryItem item : savedDelivery.getItems()) {
 
             InventoryTransaction transaction =
@@ -177,15 +180,16 @@ public class DeliveryService {
                     "Delivery #"
                             + savedDelivery.getId());
 
+            log.info("Creating inventory transaction for delivery ID: {}", savedDelivery.getId());
             inventoryRepository.save(transaction);
         }
-
+        log.info("Delivery created with ID: {}", savedDelivery.getId());
         return toResponse(savedDelivery);
     }
 
     @Transactional(readOnly = true)
     public List<DeliveryResponse> findAll() {
-
+        log.info("Fetching all deliveries");
         return deliveryRepository.findAll()
                 .stream()
                 .map(this::toResponse)
@@ -194,7 +198,7 @@ public class DeliveryService {
 
     @Transactional(readOnly = true)
     public DeliveryResponse findById(Long id) {
-
+        log.info("Fetching delivery with ID: {}", id);
         Delivery delivery =
                 deliveryRepository.findById(id)
                         .orElseThrow(() ->
@@ -207,7 +211,7 @@ public class DeliveryService {
 
     private DeliveryResponse toResponse(
             Delivery delivery) {
-
+        log.info("Converting delivery to response: {}", delivery.getId());
         BigDecimal totalAmount = delivery.getItems()
                 .stream()
                 .map(DeliveryItem::getTotalSales)
@@ -248,7 +252,7 @@ public class DeliveryService {
                             );
                         })
                         .toList();
-
+        log.info("Delivery converted to response: {}", delivery.getId());
         return new DeliveryResponse(
                 delivery.getId(),
                 delivery.getShop().getId(),

@@ -6,11 +6,13 @@ import com.marketingtrade.entity.ProductType;
 import com.marketingtrade.exception.ResourceNotFoundException;
 import com.marketingtrade.repository.ProductRepository;
 import com.marketingtrade.repository.ProductTypeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class ProductTypeService {
 
@@ -26,14 +28,17 @@ public class ProductTypeService {
     }
 
     public List<ProductType> findAll() {
+        log.info("Finding all product types");
         return repository.findAllWithProduct();
     }
 
     public List<ProductType> findByProduct(Long productId) {
+        log.info("Finding product types for product ID: {}", productId);
         return repository.findByProduct_Id(productId);
     }
 
     public ProductType findById(Long id) {
+        log.info("Finding product type with ID: {}", id);
         return repository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
@@ -44,7 +49,7 @@ public class ProductTypeService {
     public ProductType create(ProductTypeRequest request) {
 
         ProductType productType = new ProductType();
-
+        log.info("Creating new product type with name: {}", request.typeName());
         map(productType, request);
 
         return repository.save(productType);
@@ -56,6 +61,7 @@ public class ProductTypeService {
             ProductTypeRequest request) {
 
         ProductType productType = findById(id);
+        log.info("Updating product type with ID: {}", productType.getId());
 
         map(productType, request);
 

@@ -12,6 +12,7 @@ import com.marketingtrade.exception.ResourceNotFoundException;
 import com.marketingtrade.repository.InventoryRepository;
 import com.marketingtrade.repository.PurchaseRepository;
 import com.marketingtrade.repository.SupplierRepository;
+import jakarta.annotation.Nonnull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -143,29 +144,35 @@ public class PurchaseService {
         for (PurchaseItem item :
                 savedPurchase.getItems()) {
 
-            InventoryTransaction transaction =
-                    new InventoryTransaction();
-
-            transaction.setProductType(
-                    item.getProductType());
-
-            transaction.setTransactionType(
-                    "PURCHASE");
-
-            transaction.setQuantity(
-                    item.getQuantity());
-
-            transaction.setReferenceId(
-                    savedPurchase.getId());
-
-            transaction.setNotes(
-                    "Purchase #"
-                            + savedPurchase.getId());
+            InventoryTransaction transaction = createTransaction(item, savedPurchase);
 
             inventoryRepository.save(transaction);
         }
 
         return toResponse(savedPurchase);
+    }
+
+    @Nonnull
+    private static InventoryTransaction createTransaction(PurchaseItem item, Purchase savedPurchase) {
+        InventoryTransaction transaction =
+                new InventoryTransaction();
+
+        transaction.setProductType(
+                item.getProductType());
+
+        transaction.setTransactionType(
+                "PURCHASE");
+
+        transaction.setQuantity(
+                item.getQuantity());
+
+        transaction.setReferenceId(
+                savedPurchase.getId());
+
+        transaction.setNotes(
+                "Purchase #"
+                        + savedPurchase.getId());
+        return transaction;
     }
 
     private PurchaseResponse toResponse(

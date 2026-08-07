@@ -6,6 +6,7 @@ import com.marketingtrade.entity.SellingPrice;
 import com.marketingtrade.repository.ProductTypeRepository;
 import com.marketingtrade.repository.ShopRepository;
 import com.marketingtrade.repository.SellingPriceRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 public class SellingPriceService {
@@ -46,7 +48,7 @@ public class SellingPriceService {
 
     @Transactional(readOnly = true)
     public SellingPrice getById(Long id) {
-
+        log.info("Fetching selling price with id: {}", id);
         return sellingPriceRepository
                 .findById(id)
                 .orElseThrow(() ->
@@ -62,7 +64,7 @@ public class SellingPriceService {
 
     @Transactional(readOnly = true)
     public List<SellingPrice> getByShop(Long shopId) {
-
+        log.info("Fetching selling prices for shop with id: {}", shopId);
         return sellingPriceRepository
                 .findByShopId(shopId);
     }
@@ -74,7 +76,7 @@ public class SellingPriceService {
     @Transactional(readOnly = true)
     public List<SellingPrice> getByProductType(
             Long productTypeId) {
-
+        log.info("Fetching selling prices for product type with id: {}", productTypeId);
         return sellingPriceRepository
                 .findByProductTypeId(productTypeId);
     }
@@ -87,7 +89,7 @@ public class SellingPriceService {
     public List<SellingPrice> getByShopAndProductType(
             Long shopId,
             Long productTypeId) {
-
+        log.info("Fetching selling prices for shop with id: {} and product type with id: {}", shopId, productTypeId);
         return sellingPriceRepository
                 .findByShopIdAndProductTypeId(
                         shopId,
@@ -105,6 +107,8 @@ public class SellingPriceService {
             Long productTypeId,
             Long shopId,
             LocalDate date) {
+
+        log.info("Finding applicable selling price for product type with id: {}, shop with id: {}, and date: {}", productTypeId, shopId, date);
 
         // Create a final date so it can safely be used inside lambdas
         final LocalDate applicableDate =
@@ -160,6 +164,8 @@ public class SellingPriceService {
             BigDecimal sellingPrice,
             LocalDate effectiveFrom,
             LocalDate effectiveTo) {
+
+        log.info("Creating new selling price for shop with id: {}, product type with id: {}", shopId, productTypeId);
 
         Shop shop = shopRepository
                 .findById(shopId)
@@ -224,6 +230,7 @@ public class SellingPriceService {
             LocalDate effectiveTo,
             Boolean active) {
 
+        log.info("Updating selling price with id: {}", id);
         SellingPrice entity = getById(id);
 
         if (shopId != null) {
@@ -311,6 +318,7 @@ public class SellingPriceService {
 
         entity.setActive(false);
 
+        log.info("Deactivating selling price with id: {}", id);
         return sellingPriceRepository.save(entity);
     }
 }

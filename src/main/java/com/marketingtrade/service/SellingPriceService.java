@@ -39,7 +39,7 @@ public class SellingPriceService {
     // ============================================================
 
     @Transactional(readOnly = true)
-    public List<SellingPrice> getAll() {
+    public java.util.List<SellingPrice> getAllEntities() {
         return sellingPriceRepository.findAll();
     }
 
@@ -48,7 +48,7 @@ public class SellingPriceService {
     // ============================================================
 
     @Transactional(readOnly = true)
-    public SellingPrice getById(Long id) {
+    public SellingPrice getEntityById(Long id) {
         log.info("Fetching selling price with id: {}", id);
         return sellingPriceRepository
                 .findById(id)
@@ -64,7 +64,7 @@ public class SellingPriceService {
     // ============================================================
 
     @Transactional(readOnly = true)
-    public List<SellingPrice> getByShop(Long shopId) {
+    public java.util.List<SellingPrice> getByShopEntities(Long shopId) {
         log.info("Fetching selling prices for shop with id: {}", shopId);
         return sellingPriceRepository
                 .findByShopId(shopId);
@@ -75,7 +75,7 @@ public class SellingPriceService {
     // ============================================================
 
     @Transactional(readOnly = true)
-    public List<SellingPrice> getByProductType(
+    public java.util.List<SellingPrice> getByProductTypeEntities(
             Long productTypeId) {
         log.info("Fetching selling prices for product type with id: {}", productTypeId);
         return sellingPriceRepository
@@ -87,7 +87,7 @@ public class SellingPriceService {
     // ============================================================
 
     @Transactional(readOnly = true)
-    public List<SellingPrice> getByShopAndProductType(
+    public java.util.List<SellingPrice> getByShopAndProductTypeEntities(
             Long shopId,
             Long productTypeId) {
         log.info("Fetching selling prices for shop with id: {} and product type with id: {}", shopId, productTypeId);
@@ -159,7 +159,7 @@ public class SellingPriceService {
     // CREATE
     // ============================================================
 
-    public SellingPrice create(
+    public SellingPrice createEntity(
             Long shopId,
             Long productTypeId,
             BigDecimal sellingPrice,
@@ -218,11 +218,12 @@ public class SellingPriceService {
         return sellingPriceRepository.save(entity);
     }
 
+
     // ============================================================
     // UPDATE
     // ============================================================
 
-    public SellingPrice update(
+    public SellingPrice updateEntity(
             Long id,
             Long shopId,
             Long productTypeId,
@@ -232,7 +233,7 @@ public class SellingPriceService {
             Boolean active) {
 
         log.info("Updating selling price with id: {}", id);
-        SellingPrice entity = getById(id);
+        SellingPrice entity = getEntityById(id);
 
         if (shopId != null) {
 
@@ -304,7 +305,7 @@ public class SellingPriceService {
 
     public void delete(Long id) {
 
-        SellingPrice entity = getById(id);
+        SellingPrice entity = getEntityById(id);
 
         sellingPriceRepository.delete(entity);
     }
@@ -313,9 +314,9 @@ public class SellingPriceService {
     // DEACTIVATE
     // ============================================================
 
-    public SellingPrice deactivate(Long id) {
+    public SellingPrice deactivateEntity(Long id) {
 
-        SellingPrice entity = getById(id);
+        SellingPrice entity = getEntityById(id);
 
         entity.setActive(false);
 
@@ -328,66 +329,53 @@ public class SellingPriceService {
     // -----------------------------
 
     @Transactional(readOnly = true)
-    public java.util.List<SellingPriceResponse> getAllDto() {
-        return getAll()
+    public java.util.List<SellingPriceResponse> getAll() {
+        return getAllEntities()
                 .stream()
-                .map(sp -> toResponse(sp))
+                .map(EntityDtoMapper::toSellingPriceResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public SellingPriceResponse getByIdDto(Long id) {
-        return toResponse(getById(id));
+    public SellingPriceResponse getById(Long id) {
+        return EntityDtoMapper.toSellingPriceResponse(getEntityById(id));
     }
 
     @Transactional(readOnly = true)
-    public java.util.List<SellingPriceResponse> getByShopDto(Long shopId) {
-        return getByShop(shopId)
+    public java.util.List<SellingPriceResponse> getByShop(Long shopId) {
+        return getByShopEntities(shopId)
                 .stream()
-                .map(this::toResponse)
+                .map(EntityDtoMapper::toSellingPriceResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public java.util.List<SellingPriceResponse> getByProductTypeDto(Long productTypeId) {
-        return getByProductType(productTypeId)
+    public java.util.List<SellingPriceResponse> getByProductType(Long productTypeId) {
+        return getByProductTypeEntities(productTypeId)
                 .stream()
-                .map(this::toResponse)
+                .map(EntityDtoMapper::toSellingPriceResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public java.util.List<SellingPriceResponse> getByShopAndProductTypeDto(Long shopId, Long productTypeId) {
-        return getByShopAndProductType(shopId, productTypeId)
+    public java.util.List<SellingPriceResponse> getByShopAndProductType(Long shopId, Long productTypeId) {
+        return getByShopAndProductTypeEntities(shopId, productTypeId)
                 .stream()
-                .map(this::toResponse)
+                .map(EntityDtoMapper::toSellingPriceResponse)
                 .toList();
     }
 
-    private SellingPriceResponse toResponse(SellingPrice sp) {
-        return new SellingPriceResponse(
-                sp.getId(),
-                sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getId() : null,
-                sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getProductName() : null,
-                sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getBrand() : null,
-                sp.getShop() != null ? sp.getShop().getId() : null,
-                sp.getShop() != null ? sp.getShop().getShopName() : null,
-                sp.getSellingPrice(),
-                sp.getActive()
-        );
-    }
-
-    public SellingPriceResponse createDto(
+    public SellingPriceResponse create(
             Long shopId,
             Long productTypeId,
             BigDecimal sellingPrice,
             LocalDate effectiveFrom,
             LocalDate effectiveTo) {
-        SellingPrice result = create(shopId, productTypeId, sellingPrice, effectiveFrom, effectiveTo);
-        return toResponse(result);
+        SellingPrice result = createEntity(shopId, productTypeId, sellingPrice, effectiveFrom, effectiveTo);
+        return EntityDtoMapper.toSellingPriceResponse(result);
     }
 
-    public SellingPriceResponse updateDto(
+    public SellingPriceResponse update(
             Long id,
             Long shopId,
             Long productTypeId,
@@ -395,12 +383,12 @@ public class SellingPriceService {
             LocalDate effectiveFrom,
             LocalDate effectiveTo,
             Boolean active) {
-        SellingPrice result = update(id, shopId, productTypeId, sellingPrice, effectiveFrom, effectiveTo, active);
-        return toResponse(result);
+        SellingPrice result = updateEntity(id, shopId, productTypeId, sellingPrice, effectiveFrom, effectiveTo, active);
+        return EntityDtoMapper.toSellingPriceResponse(result);
     }
 
-    public SellingPriceResponse deactivateDto(Long id) {
-        SellingPrice result = deactivate(id);
-        return toResponse(result);
+    public SellingPriceResponse deactivate(Long id) {
+        SellingPrice result = deactivateEntity(id);
+        return EntityDtoMapper.toSellingPriceResponse(result);
     }
 }

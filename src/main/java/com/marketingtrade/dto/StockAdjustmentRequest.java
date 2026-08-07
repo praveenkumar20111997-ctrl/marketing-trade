@@ -4,11 +4,22 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public record StockAdjustmentRequest(
+public class StockAdjustmentRequest {
+    @NotNull
+    private BigDecimal quantity;
+    private String notes;
 
-        @NotNull
-        BigDecimal quantity,
+    public StockAdjustmentRequest() {}
 
-        String notes
-) {
+    public StockAdjustmentRequest(BigDecimal quantity, String notes) {
+        this.quantity = quantity;
+        this.notes = notes;
+    }
+
+    public BigDecimal getQuantity() { return quantity; }
+    public void setQuantity(BigDecimal quantity) { this.quantity = quantity; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
 }

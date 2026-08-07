@@ -52,14 +52,14 @@ public class DeliveryService {
 
     public DeliveryResponse create(DeliveryRequest request) {
 
-        LocalDate deliveryDate = request.deliveryDate();
+        LocalDate deliveryDate = request.getDeliveryDate();
 
         Shop shop = shopRepository
-                .findById(request.shopId())
+                .findById(request.getShopId())
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Shop not found: "
-                                        + request.shopId()));
+                                        + request.getShopId()));
 
         if (!shop.getActive()) {
             throw new IllegalArgumentException(
@@ -71,18 +71,18 @@ public class DeliveryService {
         delivery.setShop(shop);
         delivery.setDeliveryDate(deliveryDate);
         delivery.setStatus("DELIVERED");
-        delivery.setInvoiceNumber(request.invoiceNumber());
-        delivery.setNotes(request.notes());
+        delivery.setInvoiceNumber(request.getInvoiceNumber());
+        delivery.setNotes(request.getNotes());
 
-        for (DeliveryItemRequest requestItem : request.items()) {
+        for (DeliveryItemRequest requestItem : request.getItems()) {
 
             ProductType productType =
                     productTypeRepository
-                            .findById(requestItem.productTypeId())
+                            .findById(requestItem.getProductTypeId())
                             .orElseThrow(() ->
                                     new ResourceNotFoundException(
                                             "Product type not found: "
-                                                    + requestItem.productTypeId()));
+                                                    + requestItem.getProductTypeId()));
 
             if (!productType.isActive()) {
                 throw new IllegalArgumentException(
@@ -90,7 +90,7 @@ public class DeliveryService {
                                 + productType.getId());
             }
 
-            BigDecimal quantity = requestItem.quantity();
+            BigDecimal quantity = requestItem.getQuantity();
 
             BigDecimal stock =
                     inventoryRepository.getStock(
@@ -267,3 +267,4 @@ public class DeliveryService {
         );
     }
 }
+

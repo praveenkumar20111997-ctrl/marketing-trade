@@ -5,22 +5,35 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public record SellingPriceRequest(
+public class SellingPriceRequest {
+    @NotNull(message = "Product ID is required")
+    private Long productId;
+    @NotNull(message = "Shop ID is required")
+    private Long shopId;
+    @NotNull(message = "Selling price is required")
+    @DecimalMin(value = "0.00", inclusive = true, message = "Selling price cannot be negative")
+    private BigDecimal sellingPrice;
+    private Boolean active;
 
-        @NotNull(message = "Product ID is required")
-        Long productId,
+    public SellingPriceRequest() {}
 
-        @NotNull(message = "Shop ID is required")
-        Long shopId,
+    public SellingPriceRequest(Long productId, Long shopId, BigDecimal sellingPrice, Boolean active) {
+        this.productId = productId;
+        this.shopId = shopId;
+        this.sellingPrice = sellingPrice;
+        this.active = active;
+    }
 
-        @NotNull(message = "Selling price is required")
-        @DecimalMin(
-                value = "0.00",
-                inclusive = true,
-                message = "Selling price cannot be negative"
-        )
-        BigDecimal sellingPrice,
+    public Long getProductId() { return productId; }
+    public void setProductId(Long productId) { this.productId = productId; }
 
-        Boolean active
-) {
+    public Long getShopId() { return shopId; }
+    public void setShopId(Long shopId) { this.shopId = shopId; }
+
+    public BigDecimal getSellingPrice() { return sellingPrice; }
+    public void setSellingPrice(BigDecimal sellingPrice) { this.sellingPrice = sellingPrice; }
+
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
+
 }

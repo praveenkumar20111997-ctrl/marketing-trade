@@ -2,18 +2,32 @@ package com.marketingtrade.dto;
 
 import java.math.BigDecimal;
 
-public record StockResponse(
+public class StockResponse {
+    private final Long productTypeId;
+    private final String productName;
+    private final String typeName;
+    private final String specification;
+    private final String unit;
+    private final BigDecimal quantity;
 
-        Long productTypeId,
+    public StockResponse(Long productTypeId, String productName, String typeName, String specification, String unit, BigDecimal quantity) {
+        this.productTypeId = productTypeId;
+        this.productName = productName;
+        this.typeName = typeName;
+        this.specification = specification;
+        this.unit = unit;
+        this.quantity = quantity;
+    }
 
-        String productName,
+    public Long getProductTypeId() { return productTypeId; }
 
-        String typeName,
+    public String getProductName() { return productName; }
 
-        String specification,
+    public String getTypeName() { return typeName; }
 
-        String unit,
+    public String getSpecification() { return specification; }
 
-        BigDecimal quantity
-) {
+    public String getUnit() { return unit; }
+
+    public BigDecimal getQuantity() { return quantity; }
 }

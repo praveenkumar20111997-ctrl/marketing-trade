@@ -1,9 +1,7 @@
 package com.marketingtrade.controller;
 
 import com.marketingtrade.dto.SellingPriceResponse;
-import com.marketingtrade.entity.SellingPrice;
 import com.marketingtrade.service.SellingPriceService;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -34,7 +32,7 @@ public class SellingPriceController {
     @GetMapping
         public ResponseEntity<List<SellingPriceResponse>> getAll() {
             log.info("Fetching all selling prices");
-            return ResponseEntity.ok(service.getAllDto());
+            return ResponseEntity.ok(service.getAll());
         }
 
     // ============================================================
@@ -45,7 +43,7 @@ public class SellingPriceController {
         public ResponseEntity<SellingPriceResponse> getById(
                 @PathVariable Long id) {
             log.info("Fetching selling price with id: {}", id);
-            return ResponseEntity.ok(service.getByIdDto(id));
+            return ResponseEntity.ok(service.getById(id));
         }
 
     // ============================================================
@@ -56,7 +54,7 @@ public class SellingPriceController {
         public ResponseEntity<List<SellingPriceResponse>> getByShop(
                 @PathVariable Long shopId) {
             log.info("Fetching selling prices for shop with id: {}", shopId);
-            return ResponseEntity.ok(service.getByShopDto(shopId));
+            return ResponseEntity.ok(service.getByShop(shopId));
         }
 
     // ============================================================
@@ -67,7 +65,7 @@ public class SellingPriceController {
         public ResponseEntity<List<SellingPriceResponse>> getByProductType(
                 @PathVariable Long productTypeId) {
             log.info("Fetching selling prices for product type with id: {}", productTypeId);
-            return ResponseEntity.ok(service.getByProductTypeDto(productTypeId));
+            return ResponseEntity.ok(service.getByProductType(productTypeId));
         }
 
     // ============================================================
@@ -81,7 +79,7 @@ public class SellingPriceController {
                 @PathVariable Long productTypeId) {
 
             log.info("Fetching selling prices for shop with id: {} and product type with id: {}", shopId, productTypeId);
-            return ResponseEntity.ok(service.getByShopAndProductTypeDto(shopId, productTypeId));
+            return ResponseEntity.ok(service.getByShopAndProductType(shopId, productTypeId));
         }
 
     // ============================================================
@@ -130,7 +128,7 @@ public class SellingPriceController {
                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                 LocalDate effectiveTo) {
             log.info("Creating new selling price");
-            var resp = service.createDto(shopId, productTypeId, sellingPrice, effectiveFrom, effectiveTo);
+            var resp = service.create(shopId, productTypeId, sellingPrice, effectiveFrom, effectiveTo);
             log.info("Creating new selling price");
 
             return ResponseEntity
@@ -167,7 +165,7 @@ public class SellingPriceController {
                 @RequestParam(required = false)
                 Boolean active) {
 
-            var resp = service.updateDto(id, shopId, productTypeId, sellingPrice, effectiveFrom, effectiveTo, active);
+            var resp = service.update(id, shopId, productTypeId, sellingPrice, effectiveFrom, effectiveTo, active);
             log.info("Updating selling price with id: {}", id);
             return ResponseEntity.ok(resp);
         }
@@ -195,7 +193,7 @@ public class SellingPriceController {
                 @PathVariable Long id) {
 
             log.info("Deactivating selling price with id: {}", id);
-            var resp = service.deactivateDto(id);
+            var resp = service.deactivate(id);
             return ResponseEntity.ok(resp);
         }
 }

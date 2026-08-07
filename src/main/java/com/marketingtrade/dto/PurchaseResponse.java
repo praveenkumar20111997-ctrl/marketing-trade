@@ -4,42 +4,78 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public record PurchaseResponse(
+public class PurchaseResponse {
+    private final Long id;
+    private final Long supplierId;
+    private final String supplierName;
+    private final LocalDate purchaseDate;
+    private final String invoiceNumber;
+    private final String notes;
+    private final BigDecimal totalCost;
+    private final List<PurchaseItemResponse> items;
 
-        Long id,
+    public PurchaseResponse(Long id, Long supplierId, String supplierName, LocalDate purchaseDate, String invoiceNumber, String notes, BigDecimal totalCost, List<PurchaseItemResponse> items) {
+        this.id = id;
+        this.supplierId = supplierId;
+        this.supplierName = supplierName;
+        this.purchaseDate = purchaseDate;
+        this.invoiceNumber = invoiceNumber;
+        this.notes = notes;
+        this.totalCost = totalCost;
+        this.items = items;
+    }
 
-        Long supplierId,
+    public Long getId() { return id; }
 
-        String supplierName,
+    public Long getSupplierId() { return supplierId; }
 
-        LocalDate purchaseDate,
+    public String getSupplierName() { return supplierName; }
 
-        String invoiceNumber,
+    public LocalDate getPurchaseDate() { return purchaseDate; }
 
-        String notes,
+    public String getInvoiceNumber() { return invoiceNumber; }
 
-        BigDecimal totalCost,
+    public String getNotes() { return notes; }
 
-        List<PurchaseItemResponse> items
-) {
+    public BigDecimal getTotalCost() { return totalCost; }
 
-    public record PurchaseItemResponse(
+    public List<PurchaseItemResponse> getItems() { return items; }
 
-            Long id,
+    public static class PurchaseItemResponse {
+        private final Long id;
+        private final Long productTypeId;
+        private final String productName;
+        private final String typeName;
+        private final String specification;
+        private final BigDecimal quantity;
+        private final BigDecimal unitCost;
+        private final BigDecimal totalCost;
 
-            Long productTypeId,
+        public PurchaseItemResponse(Long id, Long productTypeId, String productName, String typeName, String specification, BigDecimal quantity, BigDecimal unitCost, BigDecimal totalCost) {
+            this.id = id;
+            this.productTypeId = productTypeId;
+            this.productName = productName;
+            this.typeName = typeName;
+            this.specification = specification;
+            this.quantity = quantity;
+            this.unitCost = unitCost;
+            this.totalCost = totalCost;
+        }
 
-            String productName,
+        public Long getId() { return id; }
 
-            String typeName,
+        public Long getProductTypeId() { return productTypeId; }
 
-            String specification,
+        public String getProductName() { return productName; }
 
-            BigDecimal quantity,
+        public String getTypeName() { return typeName; }
 
-            BigDecimal unitCost,
+        public String getSpecification() { return specification; }
 
-            BigDecimal totalCost
-    ) {
+        public BigDecimal getQuantity() { return quantity; }
+
+        public BigDecimal getUnitCost() { return unitCost; }
+
+        public BigDecimal getTotalCost() { return totalCost; }
     }
 }

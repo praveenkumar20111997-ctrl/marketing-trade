@@ -3,7 +3,6 @@ package com.marketingtrade.controller;
 import com.marketingtrade.dto.ShopRequest;
 import com.marketingtrade.dto.ShopResponse;
 import com.marketingtrade.service.ShopService;
-import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,13 +25,13 @@ public class ShopController {
     @GetMapping
         public ResponseEntity<List<ShopResponse>> getAll() {
             log.info("Fetching all shops");
-            return ResponseEntity.ok(service.getAllDto());
+            return ResponseEntity.ok(service.getAll());
         }
 
     @GetMapping("/{id}")
         public ResponseEntity<ShopResponse> getById(@PathVariable Long id) {
             log.info("Fetching shop with id: {}", id);
-            return ResponseEntity.ok(service.getByIdDto(id));
+            return ResponseEntity.ok(service.getById(id));
         }
 
     @PostMapping
@@ -40,7 +39,7 @@ public class ShopController {
             @Valid @RequestBody ShopRequest request) {
 
         log.info("Creating new shop");
-            var shop = service.createDto(request);
+            var shop = service.create(request);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(shop);
@@ -52,7 +51,7 @@ public class ShopController {
             @Valid @RequestBody ShopRequest request) {
 
         log.info("Updating shop with id: {}", id);
-            var shop = service.updateDto(id, request);
+            var shop = service.update(id, request);
             return ResponseEntity.ok(shop);
         }
 

@@ -2,23 +2,40 @@ package com.marketingtrade.dto;
 
 import java.math.BigDecimal;
 
-public record SellingPriceResponse(
+public class SellingPriceResponse {
+    private final Long id;
+    private final Long productId;
+    private final String productName;
+    private final String brand;
+    private final Long shopId;
+    private final String shopName;
+    private final BigDecimal sellingPrice;
+    private final Boolean active;
 
-        Long id,
+    public SellingPriceResponse(Long id, Long productId, String productName, String brand, Long shopId, String shopName, BigDecimal sellingPrice, Boolean active) {
+        this.id = id;
+        this.productId = productId;
+        this.productName = productName;
+        this.brand = brand;
+        this.shopId = shopId;
+        this.shopName = shopName;
+        this.sellingPrice = sellingPrice;
+        this.active = active;
+    }
 
-        Long productId,
+    public Long getId() { return id; }
 
-        String productName,
+    public Long getProductId() { return productId; }
 
-        String brand,
+    public String getProductName() { return productName; }
 
-        Long shopId,
+    public String getBrand() { return brand; }
 
-        String shopName,
+    public Long getShopId() { return shopId; }
 
-        BigDecimal sellingPrice,
+    public String getShopName() { return shopName; }
 
-        Boolean active
+    public BigDecimal getSellingPrice() { return sellingPrice; }
 
-) {
+    public Boolean getActive() { return active; }
 }

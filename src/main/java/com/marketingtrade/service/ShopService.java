@@ -23,48 +23,48 @@ public class ShopService {
     }
 
     @Transactional(readOnly = true)
-    public List<Shop> getAll() {
+    public java.util.List<Shop> getAllEntities() {
         return repository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public Shop getById(Long id) {
+    public Shop getEntityById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Shop not found: " + id));
     }
 
-    public Shop create(ShopRequest request) {
+    public Shop createEntity(ShopRequest request) {
 
         Shop shop = new Shop();
 
-        shop.setShopName(request.shopName());
-        shop.setOwnerName(request.ownerName());
-        shop.setContactNumber(request.contactNumber());
-        shop.setAddress(request.address());
-        shop.setLocation(request.location());
+        shop.setShopName(request.getShopName());
+        shop.setOwnerName(request.getOwnerName());
+        shop.setContactNumber(request.getContactNumber());
+        shop.setAddress(request.getAddress());
+        shop.setLocation(request.getLocation());
 
-        if (request.active() != null) {
-            shop.setActive(request.active());
+        if (request.getActive() != null) {
+            shop.setActive(request.getActive());
         }
-        log.info("Creating new shop with name: {}", request.shopName());
+        log.info("Creating new shop with name: {}", request.getShopName());
         return repository.save(shop);
     }
 
-    public Shop update(Long id, ShopRequest request) {
+    public Shop updateEntity(Long id, ShopRequest request) {
 
-        Shop shop = getById(id);
+        Shop shop = getEntityById(id);
         log.info("Updating shop with id: {}", id);
 
-        shop.setShopName(request.shopName());
-        shop.setOwnerName(request.ownerName());
-        shop.setContactNumber(request.contactNumber());
-        shop.setAddress(request.address());
-        shop.setLocation(request.location());
+        shop.setShopName(request.getShopName());
+        shop.setOwnerName(request.getOwnerName());
+        shop.setContactNumber(request.getContactNumber());
+        shop.setAddress(request.getAddress());
+        shop.setLocation(request.getLocation());
 
-        if (request.active() != null) {
-            shop.setActive(request.active());
+        if (request.getActive() != null) {
+            shop.setActive(request.getActive());
         }
         log.info("Updating shop with id: {}", id);
         return repository.save(shop);
@@ -73,7 +73,7 @@ public class ShopService {
     public void deactivate(Long id) {
         log.info("Deactivating shop with id: {}", id);
 
-        Shop shop = getById(id);
+        Shop shop = getEntityById(id);
         shop.setActive(false);
 
         repository.save(shop);
@@ -84,28 +84,29 @@ public class ShopService {
     // -----------------------------
 
     @Transactional(readOnly = true)
-    public java.util.List<ShopResponse> getAllDto() {
+    public java.util.List<ShopResponse> getAll() {
         return repository.findAll()
                 .stream()
-                .map(s -> new ShopResponse(s.getId(), s.getShopName(), s.getOwnerName(), s.getContactNumber(), s.getAddress(), s.getLocation(), s.getActive()))
+                .map(EntityDtoMapper::toShopResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public ShopResponse getByIdDto(Long id) {
-        Shop s = getById(id);
-        return new ShopResponse(s.getId(), s.getShopName(), s.getOwnerName(), s.getContactNumber(), s.getAddress(), s.getLocation(), s.getActive());
+    public ShopResponse getById(Long id) {
+        Shop s = getEntityById(id);
+        return EntityDtoMapper.toShopResponse(s);
     }
 
     @Transactional
-    public ShopResponse createDto(ShopRequest request) {
-        Shop s = create(request);
-        return new ShopResponse(s.getId(), s.getShopName(), s.getOwnerName(), s.getContactNumber(), s.getAddress(), s.getLocation(), s.getActive());
+    public ShopResponse create(ShopRequest request) {
+        Shop s = createEntity(request);
+        return EntityDtoMapper.toShopResponse(s);
     }
 
     @Transactional
-    public ShopResponse updateDto(Long id, ShopRequest request) {
-        Shop s = update(id, request);
-        return new ShopResponse(s.getId(), s.getShopName(), s.getOwnerName(), s.getContactNumber(), s.getAddress(), s.getLocation(), s.getActive());
+    public ShopResponse update(Long id, ShopRequest request) {
+        Shop s = updateEntity(id, request);
+        return EntityDtoMapper.toShopResponse(s);
     }
 }
+

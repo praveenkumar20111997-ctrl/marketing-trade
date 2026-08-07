@@ -28,17 +28,18 @@ public class ProductTypeService {
         this.productRepository = productRepository;
     }
 
-    public List<ProductType> findAll() {
+    // Entity-returning methods (internal use)
+    public java.util.List<ProductType> findAllEntities() {
         log.info("Finding all product types");
         return repository.findAllWithProduct();
     }
 
-    public List<ProductType> findByProduct(Long productId) {
+    public java.util.List<ProductType> findByProductEntities(Long productId) {
         log.info("Finding product types for product ID: {}", productId);
         return repository.findByProduct_Id(productId);
     }
 
-    public ProductType findById(Long id) {
+    public ProductType findEntityById(Long id) {
         log.info("Finding product type with ID: {}", id);
         return repository.findById(id)
                 .orElseThrow(() ->
@@ -47,21 +48,21 @@ public class ProductTypeService {
     }
 
     @Transactional
-    public ProductType create(ProductTypeRequest request) {
+    public ProductType createEntity(ProductTypeRequest request) {
 
         ProductType productType = new ProductType();
-        log.info("Creating new product type with name: {}", request.typeName());
+        log.info("Creating new product type with name: {}", request.getTypeName());
         map(productType, request);
 
         return repository.save(productType);
     }
 
     @Transactional
-    public ProductType update(
+    public ProductType updateEntity(
             Long id,
             ProductTypeRequest request) {
 
-        ProductType productType = findById(id);
+        ProductType productType = findEntityById(id);
         log.info("Updating product type with ID: {}", productType.getId());
 
         map(productType, request);
@@ -70,13 +71,18 @@ public class ProductTypeService {
     }
 
     @Transactional
-    public void deactivate(Long id) {
+    public void deactivateEntity(Long id) {
 
-        ProductType productType = findById(id);
+        ProductType productType = findEntityById(id);
 
         productType.setActive(false);
 
         repository.save(productType);
+    }
+
+    @Transactional
+    public void deactivate(Long id) {
+        deactivateEntity(id);
     }
 
     private void map(
@@ -84,19 +90,19 @@ public class ProductTypeService {
             ProductTypeRequest request) {
 
         Product product = productRepository
-                .findById(request.productId())
+                .findById(request.getProductId())
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Product not found: "
-                                        + request.productId()));
+                                        + request.getProductId()));
 
         productType.setProduct(product);
-        productType.setTypeName(request.typeName());
-        productType.setSpecification(request.specification());
-        productType.setUnit(request.unit());
+        productType.setTypeName(request.getTypeName());
+        productType.setSpecification(request.getSpecification());
+        productType.setUnit(request.getUnit());
 
-        if (request.active() != null) {
-            productType.setActive(request.active());
+        if (request.getActive() != null) {
+            productType.setActive(request.getActive());
         }
     }
 
@@ -104,58 +110,34 @@ public class ProductTypeService {
     // DTO returning methods for controllers
     // -----------------------------
 
-    public java.util.List<ProductTypeResponse> findAllDto() {
-        return findAll()
+    public java.util.List<ProductTypeResponse> findAll() {
+        return findAllEntities()
                 .stream()
-                .map(pt -> new ProductTypeResponse(
-                        pt.getId(),
-                        pt.getProduct() != null ? pt.getProduct().getId() : null,
-                        pt.getProduct() != null ? pt.getProduct().getProductName() : null,
-                        pt.getTypeName(),
-                        pt.getSpecification(),
-                        pt.getUnit(),
-                        pt.isActive()
-                ))
+                .map(EntityDtoMapper::toProductTypeResponse)
                 .toList();
     }
 
-    public java.util.List<ProductTypeResponse> findByProductDto(Long productId) {
-        return findByProduct(productId)
+    public java.util.List<ProductTypeResponse> findByProduct(Long productId) {
+        return findByProductEntities(productId)
                 .stream()
-                .map(pt -> new ProductTypeResponse(
-                        pt.getId(),
-                        pt.getProduct() != null ? pt.getProduct().getId() : null,
-                        pt.getProduct() != null ? pt.getProduct().getProductName() : null,
-                        pt.getTypeName(),
-                        pt.getSpecification(),
-                        pt.getUnit(),
-                        pt.isActive()
-                ))
+                .map(EntityDtoMapper::toProductTypeResponse)
                 .toList();
     }
 
-    public ProductTypeResponse findByIdDto(Long id) {
-        ProductType pt = findById(id);
-        return new ProductTypeResponse(
-                pt.getId(),
-                pt.getProduct() != null ? pt.getProduct().getId() : null,
-                pt.getProduct() != null ? pt.getProduct().getProductName() : null,
-                pt.getTypeName(),
-                pt.getSpecification(),
-                pt.getUnit(),
-                pt.isActive()
-        );
+    public ProductTypeResponse findById(Long id) {
+        ProductType pt = findEntityById(id);
+        return EntityDtoMapper.toProductTypeResponse(pt);
     }
 
     @Transactional
-    public ProductTypeResponse createDto(ProductTypeRequest request) {
-        ProductType pt = create(request);
-        return findByIdDto(pt.getId());
+    public ProductTypeResponse create(ProductTypeRequest request) {
+        ProductType pt = createEntity(request);
+        return findById(pt.getId());
     }
 
     @Transactional
-    public ProductTypeResponse updateDto(Long id, ProductTypeRequest request) {
-        ProductType pt = update(id, request);
-        return findByIdDto(pt.getId());
+    public ProductTypeResponse update(Long id, ProductTypeRequest request) {
+        ProductType pt = updateEntity(id, request);
+        return findById(pt.getId());
     }
 }

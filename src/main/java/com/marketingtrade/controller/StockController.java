@@ -41,18 +41,7 @@ public class StockController {
             @PathVariable Long productTypeId) {
         log.info("Fetching stock history for productTypeId: {}", productTypeId);
             var list = service.history(productTypeId);
-            var responses = list.stream()
-                    .map(it -> new InventoryTransactionResponse(
-                            it.getId(),
-                            it.getProductType() != null ? it.getProductType().getId() : null,
-                            it.getTransactionType(),
-                            it.getQuantity(),
-                            it.getTransactionDate(),
-                            it.getReferenceId(),
-                            it.getNotes()
-                    ))
-                    .collect(java.util.stream.Collectors.toList());
-            return ResponseEntity.ok(responses);
+            return ResponseEntity.ok(list);
         }
 
     @PostMapping("/{productTypeId}/adjust")
@@ -60,23 +49,14 @@ public class StockController {
             @PathVariable Long productTypeId,
             @Valid @RequestBody StockAdjustmentRequest request) {
         log.info("Adjusting stock for productTypeId: {}, quantity: {}, notes: {}",
-                productTypeId, request.quantity(), request.notes());
+                productTypeId, request.getQuantity(), request.getNotes());
             var it = service.adjust(
                             productTypeId,
-                            request.quantity(),
-                            request.notes()
+                            request.getQuantity(),
+                            request.getNotes()
                     );
-            var resp = new InventoryTransactionResponse(
-                    it.getId(),
-                    it.getProductType() != null ? it.getProductType().getId() : null,
-                    it.getTransactionType(),
-                    it.getQuantity(),
-                    it.getTransactionDate(),
-                    it.getReferenceId(),
-                    it.getNotes()
-            );
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(resp);
+                    .body(it);
         }
 }

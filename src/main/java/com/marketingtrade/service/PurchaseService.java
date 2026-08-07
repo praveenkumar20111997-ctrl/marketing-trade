@@ -81,23 +81,23 @@ public class PurchaseService {
         Purchase purchase = new Purchase();
 
         purchase.setPurchaseDate(
-                request.purchaseDate());
+                request.getPurchaseDate());
 
         purchase.setInvoiceNumber(
-                request.invoiceNumber());
+                request.getInvoiceNumber());
 
         purchase.setNotes(
-                request.notes());
+                request.getNotes());
 
-        if (request.supplierId() != null) {
+        if (request.getSupplierId() != null) {
 
             Supplier supplier =
                     supplierRepository
-                            .findById(request.supplierId())
+                            .findById(request.getSupplierId())
                             .orElseThrow(() ->
                                     new ResourceNotFoundException(
                                             "Supplier not found: "
-                                                    + request.supplierId()));
+                                                    + request.getSupplierId()));
 
             if (!supplier.getActive()) {
                 throw new IllegalArgumentException(
@@ -109,11 +109,11 @@ public class PurchaseService {
         }
 
         for (PurchaseItemRequest requestItem :
-                request.items()) {
+                request.getItems()) {
 
             ProductType productType =
-                    productTypeService.findById(
-                            requestItem.productTypeId());
+                    productTypeService.findEntityById(
+                            requestItem.getProductTypeId());
 
             if (!productType.isActive()) {
                 throw new IllegalArgumentException(
@@ -122,10 +122,10 @@ public class PurchaseService {
             }
 
             BigDecimal quantity =
-                    requestItem.quantity();
+                    requestItem.getQuantity();
 
             BigDecimal unitCost =
-                    requestItem.unitCost();
+                    requestItem.getUnitCost();
 
             PurchaseItem item = new PurchaseItem();
 
@@ -202,8 +202,7 @@ public class PurchaseService {
                 .toList();
 
         BigDecimal totalCost = items.stream()
-                .map(PurchaseResponse.PurchaseItemResponse
-                        ::totalCost)
+                .map(PurchaseResponse.PurchaseItemResponse::getTotalCost)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         Long supplierId =

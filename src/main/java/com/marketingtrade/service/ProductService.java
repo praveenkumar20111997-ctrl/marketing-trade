@@ -20,35 +20,36 @@ public class ProductService {
         this.repository = repository;
     }
 
-    public List<Product> findAll() {
+    // Entity-returning methods (for internal use)
+    public java.util.List<Product> findAllEntities() {
         return repository.findAll();
     }
 
-    public Product findById(Long id) {
+    public Product findEntityById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Product not found: " + id));
     }
 
     @Transactional
-    public Product create(ProductRequest request) {
+    public Product createEntity(ProductRequest request) {
 
         Product product = new Product();
-        log.info("Creating new product with name: {}", request.productName());
-        product.setProductName(request.productName());
-        product.setBrand(request.brand());
+        log.info("Creating new product with name: {}", request.getProductName());
+        product.setProductName(request.getProductName());
+        product.setBrand(request.getBrand());
         product.setActive(true);
         log.info("Creating new product: {}", product.getProductName());
         return repository.save(product);
     }
 
     @Transactional
-    public Product update(Long id, ProductRequest request) {
+    public Product updateEntity(Long id, ProductRequest request) {
 
-        Product product = findById(id);
+        Product product = findEntityById(id);
 
-        product.setProductName(request.productName());
-        product.setBrand(request.brand());
+        product.setProductName(request.getProductName());
+        product.setBrand(request.getBrand());
         log.info("Updating product with ID: {}", product.getId());
         return repository.save(product);
     }
@@ -56,7 +57,7 @@ public class ProductService {
     @Transactional
     public void deactivate(Long id) {
 
-        Product product = findById(id);
+        Product product = findEntityById(id);
         log.info("Deactivating product with ID: {}", product.getId());
         product.setActive(false);
 
@@ -67,27 +68,29 @@ public class ProductService {
     // DTO returning methods for controllers
     // -----------------------------
 
-    public java.util.List<ProductResponse> findAllDto() {
+    public java.util.List<ProductResponse> findAll() {
         return repository.findAll()
                 .stream()
-                .map(p -> new ProductResponse(p.getId(), p.getProductName(), p.getBrand(), p.isActive()))
+                .map(EntityDtoMapper::toProductResponse)
                 .toList();
     }
 
-    public ProductResponse findByIdDto(Long id) {
-        Product product = findById(id);
-        return new ProductResponse(product.getId(), product.getProductName(), product.getBrand(), product.isActive());
+    public ProductResponse findById(Long id) {
+        Product product = findEntityById(id);
+        return EntityDtoMapper.toProductResponse(product);
     }
 
     @Transactional
-    public ProductResponse createDto(ProductRequest request) {
-        Product product = create(request);
-        return new ProductResponse(product.getId(), product.getProductName(), product.getBrand(), product.isActive());
+    public ProductResponse create(ProductRequest request) {
+        Product product = createEntity(request);
+        return EntityDtoMapper.toProductResponse(product);
     }
 
     @Transactional
-    public ProductResponse updateDto(Long id, ProductRequest request) {
-        Product product = update(id, request);
-        return new ProductResponse(product.getId(), product.getProductName(), product.getBrand(), product.isActive());
+    public ProductResponse update(Long id, ProductRequest request) {
+        Product product = updateEntity(id, request);
+        return EntityDtoMapper.toProductResponse(product);
     }
 }
+
+

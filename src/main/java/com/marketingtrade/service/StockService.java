@@ -29,7 +29,7 @@ public class StockService {
     public StockResponse getStock(Long productTypeId) {
         log.info("Getting stock for product type ID: {}", productTypeId);
         ProductType productType =
-                productTypeService.findById(productTypeId);
+                productTypeService.findEntityById(productTypeId);
 
         BigDecimal stock =
                 inventoryRepository.getStock(productTypeId);
@@ -41,7 +41,7 @@ public class StockService {
         log.info("Getting stock for all product types");
 
         return productTypeService
-                .findAll()
+                .findAllEntities()
                 .stream()
                 .map(productType -> {
 
@@ -57,26 +57,29 @@ public class StockService {
                 .toList();
     }
 
-    public List<InventoryTransaction> history(
+    public java.util.List<com.marketingtrade.dto.InventoryTransactionResponse> history(
             Long productTypeId) {
 
-        productTypeService.findById(productTypeId);
+        productTypeService.findEntityById(productTypeId);
         log.info("Fetching inventory history for product type ID: {}", productTypeId);
 
         return inventoryRepository
                 .findByProductTypeIdOrderByTransactionDateDesc(
                         productTypeId
-                );
+                )
+                .stream()
+                .map(EntityDtoMapper::toInventoryTransactionResponse)
+                .toList();
     }
 
     @Transactional
-    public InventoryTransaction adjust(
+    public com.marketingtrade.dto.InventoryTransactionResponse adjust(
             Long productTypeId,
             BigDecimal quantity,
             String notes) {
         log.info("Adjusting stock for product type ID: {}", productTypeId);
         ProductType productType =
-                productTypeService.findById(productTypeId);
+                productTypeService.findEntityById(productTypeId);
 
         if (quantity == null ||
                 quantity.compareTo(BigDecimal.ZERO) == 0) {
@@ -106,7 +109,8 @@ public class StockService {
         transaction.setQuantity(quantity);
         transaction.setNotes(notes);
         log.info("Saving inventory transaction for product type ID: {}", productTypeId);
-        return inventoryRepository.save(transaction);
+        var it = inventoryRepository.save(transaction);
+        return EntityDtoMapper.toInventoryTransactionResponse(it);
     }
 
     private StockResponse toResponse(

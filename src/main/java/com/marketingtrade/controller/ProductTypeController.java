@@ -3,7 +3,6 @@ package com.marketingtrade.controller;
 import com.marketingtrade.dto.ProductTypeRequest;
 import com.marketingtrade.dto.ProductTypeResponse;
 import com.marketingtrade.service.ProductTypeService;
-import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,23 +28,23 @@ public class ProductTypeController {
 
             if (productId != null) {
                 log.info("Fetching product types for productId: {}", productId);
-                return ResponseEntity.ok(service.findByProductDto(productId));
+                            return ResponseEntity.ok(service.findByProduct(productId));
             }
             log.info("Fetching all product types");
-            return ResponseEntity.ok(service.findAllDto());
+                        return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
         public ResponseEntity<ProductTypeResponse> findById(@PathVariable Long id) {
             log.info("Fetching product type with id: {}", id);
-            return ResponseEntity.ok(service.findByIdDto(id));
+            return ResponseEntity.ok(service.findById(id));
         }
 
     @PostMapping
         public ResponseEntity<ProductTypeResponse> create(
             @Valid @RequestBody ProductTypeRequest request) {
         try {
-                var pt = service.createDto(request);
+                var pt = service.create(request);
                 return ResponseEntity
                         .status(HttpStatus.CREATED)
                         .body(pt);
@@ -60,7 +59,7 @@ public class ProductTypeController {
             @PathVariable Long id,
             @Valid @RequestBody ProductTypeRequest request) {
         log.info("Updating product type with id: {}", id);
-            var pt = service.updateDto(id, request);
+            var pt = service.update(id, request);
             return ResponseEntity.ok(pt);
         }
 

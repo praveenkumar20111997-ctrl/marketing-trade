@@ -2,9 +2,7 @@ package com.marketingtrade.controller;
 
 import com.marketingtrade.dto.ProductRequest;
 import com.marketingtrade.dto.ProductResponse;
-import com.marketingtrade.entity.Product;
 import com.marketingtrade.service.ProductService;
-import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +27,7 @@ public class ProductController {
         public ResponseEntity<List<ProductResponse>> findAll() {
             log.info("Fetching all products");
             try {
-                return ResponseEntity.ok(service.findAllDto());
+                return ResponseEntity.ok(service.findAll());
             } catch (Exception e) {
                 log.error("Error fetching products: ", e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -39,7 +37,7 @@ public class ProductController {
     @GetMapping("/{id}")
         public ResponseEntity<ProductResponse> findById(@PathVariable Long id) {
             try {
-                return ResponseEntity.ok(service.findByIdDto(id));
+                return ResponseEntity.ok(service.findById(id));
             } catch (RuntimeException e) {
                 log.info("Product not found with id: {}", id);
                 return ResponseEntity.notFound().build();
@@ -50,7 +48,7 @@ public class ProductController {
         public ResponseEntity<ProductResponse> create(
             @Valid @RequestBody ProductRequest request) {
         try {
-                var productResp = service.createDto(request);
+                var productResp = service.create(request);
                 log.info("Product created");
             return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -67,7 +65,7 @@ public class ProductController {
                 @Valid @RequestBody ProductRequest request) {
 
             try {
-                var productResp = service.updateDto(id, request);
+                var productResp = service.update(id, request);
                 return ResponseEntity.ok(productResp);
             } catch (RuntimeException e) {
                 return ResponseEntity.notFound().build();

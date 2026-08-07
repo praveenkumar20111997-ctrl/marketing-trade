@@ -23,12 +23,12 @@ public class SupplierService {
     }
 
     @Transactional(readOnly = true)
-    public List<Supplier> getAll() {
+    public java.util.List<Supplier> getAllEntities() {
         return repository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public Supplier getById(Long id) {
+    public Supplier getEntityById(Long id) {
         log.info("Finding supplier with ID: {}", id);
         return repository.findById(id)
                 .orElseThrow(() ->
@@ -37,34 +37,34 @@ public class SupplierService {
     }
 
     @Transactional
-    public Supplier create(SupplierRequest request) {
+    public Supplier createEntity(SupplierRequest request) {
 
         Supplier supplier = new Supplier();
 
-        supplier.setSupplierName(request.supplierName());
-        supplier.setContact(request.contact());
-        supplier.setLocation(request.location());
-        supplier.setAddress(request.address());
+        supplier.setSupplierName(request.getSupplierName());
+        supplier.setContact(request.getContact());
+        supplier.setLocation(request.getLocation());
+        supplier.setAddress(request.getAddress());
 
-        if (request.active() != null) {
-            supplier.setActive(request.active());
+        if (request.getActive() != null) {
+            supplier.setActive(request.getActive());
         }
-        log.info("Creating new supplier with name: {}", request.supplierName());
+        log.info("Creating new supplier with name: {}", request.getSupplierName());
         return repository.save(supplier);
     }
 
     @Transactional
-    public Supplier update(Long id, SupplierRequest request) {
+    public Supplier updateEntity(Long id, SupplierRequest request) {
 
-        Supplier supplier = getById(id);
+        Supplier supplier = getEntityById(id);
 
-        supplier.setSupplierName(request.supplierName());
-        supplier.setContact(request.contact());
-        supplier.setLocation(request.location());
-        supplier.setAddress(request.address());
+        supplier.setSupplierName(request.getSupplierName());
+        supplier.setContact(request.getContact());
+        supplier.setLocation(request.getLocation());
+        supplier.setAddress(request.getAddress());
 
-        if (request.active() != null) {
-            supplier.setActive(request.active());
+        if (request.getActive() != null) {
+            supplier.setActive(request.getActive());
         }
         log.info("Updating supplier with ID: {}", supplier.getId());
         return repository.save(supplier);
@@ -73,7 +73,7 @@ public class SupplierService {
     @Transactional
     public void deactivate(Long id) {
 
-        Supplier supplier = getById(id);
+        Supplier supplier = getEntityById(id);
         log.info("Deactivating supplier with ID: {}", supplier.getId());
         supplier.setActive(false);
 
@@ -85,28 +85,28 @@ public class SupplierService {
     // -----------------------------
 
     @Transactional(readOnly = true)
-    public java.util.List<SupplierResponse> getAllDto() {
+    public java.util.List<SupplierResponse> getAll() {
         return repository.findAll()
                 .stream()
-                .map(s -> new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive()))
+                .map(EntityDtoMapper::toSupplierResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public SupplierResponse getByIdDto(Long id) {
-        Supplier s = getById(id);
-        return new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive());
+    public SupplierResponse getById(Long id) {
+        Supplier s = getEntityById(id);
+        return EntityDtoMapper.toSupplierResponse(s);
     }
 
     @Transactional
-    public SupplierResponse createDto(SupplierRequest request) {
-        Supplier s = create(request);
-        return new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive());
+    public SupplierResponse create(SupplierRequest request) {
+        Supplier s = createEntity(request);
+        return EntityDtoMapper.toSupplierResponse(s);
     }
 
     @Transactional
-    public SupplierResponse updateDto(Long id, SupplierRequest request) {
-        Supplier s = update(id, request);
-        return new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive());
+    public SupplierResponse update(Long id, SupplierRequest request) {
+        Supplier s = updateEntity(id, request);
+        return EntityDtoMapper.toSupplierResponse(s);
     }
 }

@@ -4,52 +4,119 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public record DeliveryResponse(
+public class DeliveryResponse {
+    private final Long id;
+    private final Long shopId;
+    private final String shopName;
+    private final LocalDate deliveryDate;
+    private final String status;
+    private final String invoiceNumber;
+    private final BigDecimal totalAmount;
+    private final BigDecimal totalCost;
+    private final BigDecimal totalProfit;
+    private final List<DeliveryItemResponse> items;
 
-        Long id,
+    public DeliveryResponse(Long id, Long shopId, String shopName, LocalDate deliveryDate, String status, String invoiceNumber, BigDecimal totalAmount, BigDecimal totalCost, BigDecimal totalProfit, List<DeliveryItemResponse> items) {
+        this.id = id;
+        this.shopId = shopId;
+        this.shopName = shopName;
+        this.deliveryDate = deliveryDate;
+        this.status = status;
+        this.invoiceNumber = invoiceNumber;
+        this.totalAmount = totalAmount;
+        this.totalCost = totalCost;
+        this.totalProfit = totalProfit;
+        this.items = items;
+    }
 
-        Long shopId,
+    public Long getId() { return id; }
+    public Long id() { return id; }
 
-        String shopName,
+    public Long getShopId() { return shopId; }
+    public Long shopId() { return shopId; }
 
-        LocalDate deliveryDate,
+    public String getShopName() { return shopName; }
+    public String shopName() { return shopName; }
 
-        String status,
+    public LocalDate getDeliveryDate() { return deliveryDate; }
+    public LocalDate deliveryDate() { return deliveryDate; }
 
-        String invoiceNumber,
+    public String getStatus() { return status; }
+    public String status() { return status; }
 
-        BigDecimal totalAmount,
+    public String getInvoiceNumber() { return invoiceNumber; }
+    public String invoiceNumber() { return invoiceNumber; }
 
-        BigDecimal totalCost,
+    public BigDecimal getTotalAmount() { return totalAmount; }
+    public BigDecimal totalAmount() { return totalAmount; }
 
-        BigDecimal totalProfit,
+    public BigDecimal getTotalCost() { return totalCost; }
+    public BigDecimal totalCost() { return totalCost; }
 
-        List<DeliveryItemResponse> items
-) {
+    public BigDecimal getTotalProfit() { return totalProfit; }
+    public BigDecimal totalProfit() { return totalProfit; }
 
-    public record DeliveryItemResponse(
+    public List<DeliveryItemResponse> getItems() { return items; }
+    public List<DeliveryItemResponse> items() { return items; }
 
-            Long id,
+    public static class DeliveryItemResponse {
+        private final Long id;
+        private final Long productTypeId;
+        private final String productName;
+        private final String typeName;
+        private final String specification;
+        private final BigDecimal quantity;
+        private final BigDecimal purchaseCost;
+        private final BigDecimal sellingPrice;
+        private final BigDecimal totalSales;
+        private final BigDecimal totalCost;
+        private final BigDecimal profit;
 
-            Long productTypeId,
+        public DeliveryItemResponse(Long id, Long productTypeId, String productName, String typeName, String specification, BigDecimal quantity, BigDecimal purchaseCost, BigDecimal sellingPrice, BigDecimal totalSales, BigDecimal totalCost, BigDecimal profit) {
+            this.id = id;
+            this.productTypeId = productTypeId;
+            this.productName = productName;
+            this.typeName = typeName;
+            this.specification = specification;
+            this.quantity = quantity;
+            this.purchaseCost = purchaseCost;
+            this.sellingPrice = sellingPrice;
+            this.totalSales = totalSales;
+            this.totalCost = totalCost;
+            this.profit = profit;
+        }
 
-            String productName,
+        public Long getId() { return id; }
+        public Long id() { return id; }
 
-            String typeName,
+        public Long getProductTypeId() { return productTypeId; }
+        public Long productTypeId() { return productTypeId; }
 
-            String specification,
+        public String getProductName() { return productName; }
+        public String productName() { return productName; }
 
-            BigDecimal quantity,
+        public String getTypeName() { return typeName; }
+        public String typeName() { return typeName; }
 
-            BigDecimal purchaseCost,
+        public String getSpecification() { return specification; }
+        public String specification() { return specification; }
 
-            BigDecimal sellingPrice,
+        public BigDecimal getQuantity() { return quantity; }
+        public BigDecimal quantity() { return quantity; }
 
-            BigDecimal totalSales,
+        public BigDecimal getPurchaseCost() { return purchaseCost; }
+        public BigDecimal purchaseCost() { return purchaseCost; }
 
-            BigDecimal totalCost,
+        public BigDecimal getSellingPrice() { return sellingPrice; }
+        public BigDecimal sellingPrice() { return sellingPrice; }
 
-            BigDecimal profit
-    ) {
+        public BigDecimal getTotalSales() { return totalSales; }
+        public BigDecimal totalSales() { return totalSales; }
+
+        public BigDecimal getTotalCost() { return totalCost; }
+        public BigDecimal totalCost() { return totalCost; }
+
+        public BigDecimal getProfit() { return profit; }
+        public BigDecimal profit() { return profit; }
     }
 }

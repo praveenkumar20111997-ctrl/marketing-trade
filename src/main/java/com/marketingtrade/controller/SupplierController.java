@@ -3,7 +3,6 @@ package com.marketingtrade.controller;
 import com.marketingtrade.dto.SupplierRequest;
 import com.marketingtrade.dto.SupplierResponse;
 import com.marketingtrade.service.SupplierService;
-import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,19 +24,19 @@ public class SupplierController {
 
     @GetMapping
         public ResponseEntity<List<SupplierResponse>> getAll() {
-            return ResponseEntity.ok(service.getAllDto());
+            return ResponseEntity.ok(service.getAll());
         }
 
     @GetMapping("/{id}")
         public ResponseEntity<SupplierResponse> getById(@PathVariable Long id) {
-            return ResponseEntity.ok(service.getByIdDto(id));
+            return ResponseEntity.ok(service.getById(id));
         }
 
     @PostMapping
         public ResponseEntity<SupplierResponse> create(
             @Valid @RequestBody SupplierRequest request) {
         log.info("Creating new supplier");
-            var s = service.createDto(request);
+            var s = service.create(request);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(s);
@@ -48,7 +47,7 @@ public class SupplierController {
             @PathVariable Long id,
             @Valid @RequestBody SupplierRequest request) {
         log.info("Updating supplier with id: {}", id);
-            var s = service.updateDto(id, request);
+            var s = service.update(id, request);
             return ResponseEntity.ok(s);
         }
 

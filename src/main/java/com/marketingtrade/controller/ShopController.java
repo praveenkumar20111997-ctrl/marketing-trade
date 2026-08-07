@@ -1,8 +1,9 @@
 package com.marketingtrade.controller;
 
 import com.marketingtrade.dto.ShopRequest;
-import com.marketingtrade.entity.Shop;
+import com.marketingtrade.dto.ShopResponse;
 import com.marketingtrade.service.ShopService;
+import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,35 +24,42 @@ public class ShopController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Shop>> getAll() {
+        public ResponseEntity<List<ShopResponse>> getAll() {
         log.info("Fetching all shops");
-        return ResponseEntity.ok(service.getAll());
-    }
+            var shops = service.getAll();
+            var responses = shops.stream()
+                    .map(s -> new ShopResponse(s.getId(), s.getShopName(), s.getOwnerName(), s.getContactNumber(), s.getAddress(), s.getLocation(), s.getActive()))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(responses);
+        }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Shop> getById(@PathVariable Long id) {
+        public ResponseEntity<ShopResponse> getById(@PathVariable Long id) {
         log.info("Fetching shop with id: {}", id);
-        return ResponseEntity.ok(service.getById(id));
-    }
+            var s = service.getById(id);
+            return ResponseEntity.ok(new ShopResponse(s.getId(), s.getShopName(), s.getOwnerName(), s.getContactNumber(), s.getAddress(), s.getLocation(), s.getActive()));
+        }
 
     @PostMapping
-    public ResponseEntity<Shop> create(
+        public ResponseEntity<ShopResponse> create(
             @Valid @RequestBody ShopRequest request) {
 
         log.info("Creating new shop");
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(service.create(request));
-    }
+            var shop = service.create(request);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(new ShopResponse(shop.getId(), shop.getShopName(), shop.getOwnerName(), shop.getContactNumber(), shop.getAddress(), shop.getLocation(), shop.getActive()));
+        }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Shop> update(
+        public ResponseEntity<ShopResponse> update(
             @PathVariable Long id,
             @Valid @RequestBody ShopRequest request) {
 
         log.info("Updating shop with id: {}", id);
-        return ResponseEntity.ok(service.update(id, request));
-    }
+            var shop = service.update(id, request);
+            return ResponseEntity.ok(new ShopResponse(shop.getId(), shop.getShopName(), shop.getOwnerName(), shop.getContactNumber(), shop.getAddress(), shop.getLocation(), shop.getActive()));
+        }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -2,7 +2,7 @@ package com.marketingtrade.controller;
 
 import com.marketingtrade.dto.StockAdjustmentRequest;
 import com.marketingtrade.dto.StockResponse;
-import com.marketingtrade.entity.InventoryTransaction;
+import com.marketingtrade.dto.InventoryTransactionResponse;
 import com.marketingtrade.service.StockService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -37,24 +37,46 @@ public class StockController {
     }
 
     @GetMapping("/{productTypeId}/history")
-    public ResponseEntity<List<InventoryTransaction>> history(
+        public ResponseEntity<List<InventoryTransactionResponse>> history(
             @PathVariable Long productTypeId) {
         log.info("Fetching stock history for productTypeId: {}", productTypeId);
-        return ResponseEntity.ok(service.history(productTypeId));
-    }
+            var list = service.history(productTypeId);
+            var responses = list.stream()
+                    .map(it -> new InventoryTransactionResponse(
+                            it.getId(),
+                            it.getProductType() != null ? it.getProductType().getId() : null,
+                            it.getTransactionType(),
+                            it.getQuantity(),
+                            it.getTransactionDate(),
+                            it.getReferenceId(),
+                            it.getNotes()
+                    ))
+                    .collect(java.util.stream.Collectors.toList());
+            return ResponseEntity.ok(responses);
+        }
 
     @PostMapping("/{productTypeId}/adjust")
-    public ResponseEntity<InventoryTransaction> adjust(
+        public ResponseEntity<InventoryTransactionResponse> adjust(
             @PathVariable Long productTypeId,
             @Valid @RequestBody StockAdjustmentRequest request) {
         log.info("Adjusting stock for productTypeId: {}, quantity: {}, notes: {}",
                 productTypeId, request.quantity(), request.notes());
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(service.adjust(
-                        productTypeId,
-                        request.quantity(),
-                        request.notes()
-                ));
-    }
+            var it = service.adjust(
+                            productTypeId,
+                            request.quantity(),
+                            request.notes()
+                    );
+            var resp = new InventoryTransactionResponse(
+                    it.getId(),
+                    it.getProductType() != null ? it.getProductType().getId() : null,
+                    it.getTransactionType(),
+                    it.getQuantity(),
+                    it.getTransactionDate(),
+                    it.getReferenceId(),
+                    it.getNotes()
+            );
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(resp);
+        }
 }

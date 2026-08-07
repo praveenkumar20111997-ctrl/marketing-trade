@@ -1,7 +1,8 @@
 package com.marketingtrade.controller;
 
-import com.marketingtrade.entity.SellingPrice;
+import com.marketingtrade.dto.SellingPriceResponse;
 import com.marketingtrade.service.SellingPriceService;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -30,70 +31,123 @@ public class SellingPriceController {
     // ============================================================
 
     @GetMapping
-    public ResponseEntity<List<SellingPrice>> getAll() {
+        public ResponseEntity<List<SellingPriceResponse>> getAll() {
         log.info("Fetching all selling prices");
-        return ResponseEntity.ok(
-                service.getAll()
-        );
-    }
+            var list = service.getAll();
+            var responses = list.stream()
+                    .map(sp -> new SellingPriceResponse(
+                            sp.getId(),
+                            sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getId() : null,
+                            sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getProductName() : null,
+                            sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getBrand() : null,
+                            sp.getShop() != null ? sp.getShop().getId() : null,
+                            sp.getShop() != null ? sp.getShop().getShopName() : null,
+                            sp.getSellingPrice(),
+                            sp.getActive()
+                    ))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(responses);
+        }
 
     // ============================================================
     // GET BY ID
     // ============================================================
 
     @GetMapping("/{id}")
-    public ResponseEntity<SellingPrice> getById(
+        public ResponseEntity<SellingPriceResponse> getById(
             @PathVariable Long id) {
         log.info("Fetching selling price with id: {}", id);
-        return ResponseEntity.ok(
-                service.getById(id)
-        );
-    }
+            var sp = service.getById(id);
+            var resp = new SellingPriceResponse(
+                    sp.getId(),
+                    sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getId() : null,
+                    sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getProductName() : null,
+                    sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getBrand() : null,
+                    sp.getShop() != null ? sp.getShop().getId() : null,
+                    sp.getShop() != null ? sp.getShop().getShopName() : null,
+                    sp.getSellingPrice(),
+                    sp.getActive()
+            );
+            return ResponseEntity.ok(resp);
+        }
 
     // ============================================================
     // GET BY SHOP
     // ============================================================
 
     @GetMapping("/shop/{shopId}")
-    public ResponseEntity<List<SellingPrice>> getByShop(
+        public ResponseEntity<List<SellingPriceResponse>> getByShop(
             @PathVariable Long shopId) {
         log.info("Fetching selling prices for shop with id: {}", shopId);
-        return ResponseEntity.ok(
-                service.getByShop(shopId)
-        );
-    }
+            var list = service.getByShop(shopId);
+            var responses = list.stream()
+                    .map(sp -> new SellingPriceResponse(
+                            sp.getId(),
+                            sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getId() : null,
+                            sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getProductName() : null,
+                            sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getBrand() : null,
+                            sp.getShop() != null ? sp.getShop().getId() : null,
+                            sp.getShop() != null ? sp.getShop().getShopName() : null,
+                            sp.getSellingPrice(),
+                            sp.getActive()
+                    ))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(responses);
+        }
 
     // ============================================================
     // GET BY PRODUCT TYPE
     // ============================================================
 
     @GetMapping("/product-type/{productTypeId}")
-    public ResponseEntity<List<SellingPrice>> getByProductType(
+        public ResponseEntity<List<SellingPriceResponse>> getByProductType(
             @PathVariable Long productTypeId) {
         log.info("Fetching selling prices for product type with id: {}", productTypeId);
-        return ResponseEntity.ok(
-                service.getByProductType(productTypeId)
-        );
-    }
+            var list = service.getByProductType(productTypeId);
+            var responses = list.stream()
+                    .map(sp -> new SellingPriceResponse(
+                            sp.getId(),
+                            sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getId() : null,
+                            sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getProductName() : null,
+                            sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getBrand() : null,
+                            sp.getShop() != null ? sp.getShop().getId() : null,
+                            sp.getShop() != null ? sp.getShop().getShopName() : null,
+                            sp.getSellingPrice(),
+                            sp.getActive()
+                    ))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(responses);
+        }
 
     // ============================================================
     // GET BY SHOP + PRODUCT TYPE
     // ============================================================
 
     @GetMapping("/shop/{shopId}/product-type/{productTypeId}")
-    public ResponseEntity<List<SellingPrice>>
+        public ResponseEntity<List<SellingPriceResponse>>
     getByShopAndProductType(
             @PathVariable Long shopId,
             @PathVariable Long productTypeId) {
 
         log.info("Fetching selling prices for shop with id: {} and product type with id: {}", shopId, productTypeId);
-        return ResponseEntity.ok(
-                service.getByShopAndProductType(
-                        shopId,
-                        productTypeId
-                )
-        );
-    }
+            var list = service.getByShopAndProductType(
+                            shopId,
+                            productTypeId
+                    );
+            var responses = list.stream()
+                    .map(sp -> new SellingPriceResponse(
+                            sp.getId(),
+                            sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getId() : null,
+                            sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getProductName() : null,
+                            sp.getProductType() != null && sp.getProductType().getProduct() != null ? sp.getProductType().getProduct().getBrand() : null,
+                            sp.getShop() != null ? sp.getShop().getId() : null,
+                            sp.getShop() != null ? sp.getShop().getShopName() : null,
+                            sp.getSellingPrice(),
+                            sp.getActive()
+                    ))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(responses);
+        }
 
     // ============================================================
     // FIND APPLICABLE SELLING PRICE
@@ -125,7 +179,7 @@ public class SellingPriceController {
     // ============================================================
 
     @PostMapping
-    public ResponseEntity<SellingPrice> create(
+        public ResponseEntity<SellingPriceResponse> create(
 
             @RequestParam Long shopId,
 
@@ -151,17 +205,28 @@ public class SellingPriceController {
                 );
         log.info("Creating new selling price");
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(result);
-    }
+            var resp = new SellingPriceResponse(
+                    result.getId(),
+                    result.getProductType() != null && result.getProductType().getProduct() != null ? result.getProductType().getProduct().getId() : null,
+                    result.getProductType() != null && result.getProductType().getProduct() != null ? result.getProductType().getProduct().getProductName() : null,
+                    result.getProductType() != null && result.getProductType().getProduct() != null ? result.getProductType().getProduct().getBrand() : null,
+                    result.getShop() != null ? result.getShop().getId() : null,
+                    result.getShop() != null ? result.getShop().getShopName() : null,
+                    result.getSellingPrice(),
+                    result.getActive()
+            );
+
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(resp);
+        }
 
     // ============================================================
     // UPDATE
     // ============================================================
 
     @PutMapping("/{id}")
-    public ResponseEntity<SellingPrice> update(
+        public ResponseEntity<SellingPriceResponse> update(
 
             @PathVariable Long id,
 
@@ -196,8 +261,18 @@ public class SellingPriceController {
                         active
                 );
         log.info("Updating selling price with id: {}", id);
-        return ResponseEntity.ok(result);
-    }
+            var resp = new SellingPriceResponse(
+                    result.getId(),
+                    result.getProductType() != null && result.getProductType().getProduct() != null ? result.getProductType().getProduct().getId() : null,
+                    result.getProductType() != null && result.getProductType().getProduct() != null ? result.getProductType().getProduct().getProductName() : null,
+                    result.getProductType() != null && result.getProductType().getProduct() != null ? result.getProductType().getProduct().getBrand() : null,
+                    result.getShop() != null ? result.getShop().getId() : null,
+                    result.getShop() != null ? result.getShop().getShopName() : null,
+                    result.getSellingPrice(),
+                    result.getActive()
+            );
+            return ResponseEntity.ok(resp);
+        }
 
     // ============================================================
     // DELETE
@@ -218,12 +293,21 @@ public class SellingPriceController {
     // ============================================================
 
     @PutMapping("/{id}/deactivate")
-    public ResponseEntity<SellingPrice> deactivate(
+        public ResponseEntity<SellingPriceResponse> deactivate(
             @PathVariable Long id) {
 
         log.info("Deactivating selling price with id: {}", id);
-        return ResponseEntity.ok(
-                service.deactivate(id)
-        );
-    }
+            var result = service.deactivate(id);
+            var resp = new SellingPriceResponse(
+                    result.getId(),
+                    result.getProductType() != null && result.getProductType().getProduct() != null ? result.getProductType().getProduct().getId() : null,
+                    result.getProductType() != null && result.getProductType().getProduct() != null ? result.getProductType().getProduct().getProductName() : null,
+                    result.getProductType() != null && result.getProductType().getProduct() != null ? result.getProductType().getProduct().getBrand() : null,
+                    result.getShop() != null ? result.getShop().getId() : null,
+                    result.getShop() != null ? result.getShop().getShopName() : null,
+                    result.getSellingPrice(),
+                    result.getActive()
+            );
+            return ResponseEntity.ok(resp);
+        }
 }

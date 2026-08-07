@@ -1,8 +1,9 @@
 package com.marketingtrade.controller;
 
 import com.marketingtrade.dto.SupplierRequest;
-import com.marketingtrade.entity.Supplier;
+import com.marketingtrade.dto.SupplierResponse;
 import com.marketingtrade.service.SupplierService;
+import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,31 +24,38 @@ public class SupplierController {
     }
 
     @GetMapping
-    public List<Supplier> getAll() {
-        return service.getAll();
-    }
+        public ResponseEntity<List<SupplierResponse>> getAll() {
+            var suppliers = service.getAll();
+            var responses = suppliers.stream()
+                    .map(s -> new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive()))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(responses);
+        }
 
     @GetMapping("/{id}")
-    public Supplier getById(@PathVariable Long id) {
-        return service.getById(id);
-    }
+        public ResponseEntity<SupplierResponse> getById(@PathVariable Long id) {
+            var s = service.getById(id);
+            return ResponseEntity.ok(new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive()));
+        }
 
     @PostMapping
-    public ResponseEntity<Supplier> create(
+        public ResponseEntity<SupplierResponse> create(
             @Valid @RequestBody SupplierRequest request) {
         log.info("Creating new supplier");
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(service.create(request));
-    }
+            var s = service.create(request);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive()));
+        }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Supplier> update(
+        public ResponseEntity<SupplierResponse> update(
             @PathVariable Long id,
             @Valid @RequestBody SupplierRequest request) {
         log.info("Updating supplier with id: {}", id);
-        return ResponseEntity.ok(service.update(id, request));
-    }
+            var s = service.update(id, request);
+            return ResponseEntity.ok(new SupplierResponse(s.getId(), s.getSupplierName(), s.getContact(), s.getLocation(), s.getAddress(), s.getActive()));
+        }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -1,8 +1,9 @@
 package com.marketingtrade.controller;
 
 import com.marketingtrade.dto.ProductRequest;
-import com.marketingtrade.entity.Product;
+import com.marketingtrade.dto.ProductResponse;
 import com.marketingtrade.service.ProductService;
+import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,38 +25,41 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> findAll() {
+        public ResponseEntity<List<ProductResponse>> findAll() {
         log.info("Fetching all products");
         try {
             List<Product> products = service.findAll();
             log.info("Found {} products", products.size());
-            return ResponseEntity.ok(products);
-        }   catch (Exception e) {
-            log.error("Error fetching products: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                List<ProductResponse> responses = products.stream()
+                        .map(p -> new ProductResponse(p.getId(), p.getProductName(), p.getBrand(), p.isActive()))
+                        .collect(Collectors.toList());
+                return ResponseEntity.ok(responses);
+            }   catch (Exception e) {
+                log.error("Error fetching products: ", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
         }
-    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> findById(@PathVariable Long id) {
+        public ResponseEntity<ProductResponse> findById(@PathVariable Long id) {
         Product product = service.findById(id);
         if (product == null) {
             log.info("Product not found with id: {}", id);
             return ResponseEntity.notFound().build();
         }
         log.info("Product found with id: {}", id);
-        return ResponseEntity.ok(product);
+            return ResponseEntity.ok(new ProductResponse(product.getId(), product.getProductName(), product.getBrand(), product.isActive()));
     }
 
     @PostMapping
-    public ResponseEntity<Product> create(
+        public ResponseEntity<ProductResponse> create(
             @Valid @RequestBody ProductRequest request) {
         try {
             Product product = service.create(request);
             log.info("Product created with id: {}", product.getId());
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(product);
+                        .body(new ProductResponse(product.getId(), product.getProductName(), product.getBrand(), product.isActive()));
         } catch (Exception e) {
             log.error("Error creating product: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -63,7 +67,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> update(
+        public ResponseEntity<ProductResponse> update(
             @PathVariable Long id,
             @Valid @RequestBody ProductRequest request) {
 
@@ -73,7 +77,7 @@ public class ProductController {
                 return ResponseEntity.notFound().build();
             }
             log.info("Product updated with id: {}", product.getId());
-            return ResponseEntity.ok(product);
+                return ResponseEntity.ok(new ProductResponse(product.getId(), product.getProductName(), product.getBrand(), product.isActive()));
         } catch (Exception e) {
             log.error("Error updating product: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

@@ -2,6 +2,7 @@ package com.marketingtrade.controller;
 
 import com.marketingtrade.dto.ProductRequest;
 import com.marketingtrade.dto.ProductResponse;
+import com.marketingtrade.entity.Product;
 import com.marketingtrade.service.ProductService;
 import java.util.stream.Collectors;
 import jakarta.validation.Valid;

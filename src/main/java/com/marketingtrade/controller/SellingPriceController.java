@@ -1,6 +1,7 @@
 package com.marketingtrade.controller;
 
 import com.marketingtrade.dto.SellingPriceResponse;
+import com.marketingtrade.entity.SellingPrice;
 import com.marketingtrade.service.SellingPriceService;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;

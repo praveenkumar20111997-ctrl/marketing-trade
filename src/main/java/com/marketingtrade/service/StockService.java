@@ -112,7 +112,6 @@ public class StockService {
     private StockResponse toResponse(
             ProductType productType,
             BigDecimal quantity) {
-        log.info("Creating stock response for product type ID: {}", productType.getId());
         return new StockResponse(
                 productType.getId(),
                 productType.getProduct().getProductName(),
